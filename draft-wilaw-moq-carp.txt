@@ -4,12 +4,12 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                           23 October 2025
-Expires: 26 April 2026
+Intended status: Informational                           3 November 2025
+Expires: 7 May 2026
 
 
              CARP - a CMAF compliant implementation of WARP
-                       draft-law-moq-carp-latest
+                      draft-wilaw-moq-carp-latest
 
 Abstract
 
@@ -22,9 +22,9 @@ About This Document
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://wilaw.github.io/carp/draft-law-moq-carp.html.  Status
+   https://wilaw.github.io/carp/draft-wilaw-moq-carp.html.  Status
    information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-law-moq-carp/.
+   https://datatracker.ietf.org/doc/draft-wilaw-moq-carp/.
 
    Discussion of this document takes place on the Media Over QUIC
    Working Group mailing list (mailto:moq@ietf.org), which is archived
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2026.
+   This Internet-Draft will expire on 7 May 2026.
 
 Copyright Notice
 
