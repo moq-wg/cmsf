@@ -2,7 +2,7 @@
 title: "CARP - a CMAF compliant implementation of WARP"
 category: info
 
-docname: draft-law-moq-carp-latest
+docname: draft-wilaw-moq-carp-latest
 submissiontype: IETF
 number:
 date:
@@ -21,7 +21,7 @@ venue:
   mail: "moq@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/moq/"
   github: "wilaw/carp"
-  latest: "https://wilaw.github.io/carp/draft-law-moq-carp.html"
+  latest: "https://wilaw.github.io/carp/draft-wilaw-moq-carp.html"
 
 author:
   -
