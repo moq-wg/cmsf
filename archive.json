@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-26T01:18:04.024945+00:00",
+  "timestamp": "2025-11-20T01:14:32.978202+00:00",
   "repo": "wilaw/carp",
   "labels": [
     {
@@ -194,7 +194,7 @@
       "labels": [],
       "body": "See https://github.com/moq-wg/warp-streaming-format/issues/69 about renaming WARP.\n\nCARP name was just a place holder. Use this issue to suggest some practical names for the CMAF-compatible derivative of WARP. \n\n1. CMAF Compatible MOQ Streaming Format (CMSF)\n2. CMAF-4-MOQ-Streaming (C4MS)\n",
       "createdAt": "2025-09-25T20:19:04Z",
-      "updatedAt": "2025-10-02T18:49:36Z",
+      "updatedAt": "2025-11-19T10:56:46Z",
       "closedAt": null,
       "comments": [
         {
@@ -203,6 +203,20 @@
           "body": "3. MoQ Streaming of CMAF Content (MSCC)",
           "createdAt": "2025-10-02T18:49:36Z",
           "updatedAt": "2025-10-02T18:49:36Z"
+        },
+        {
+          "author": "wilaw",
+          "authorAssociation": "OWNER",
+          "body": "I'd also like to propose the name \"Fire\".\n\nReasons:\n1. It's a common noun and unlikely to incur trademark issues\n2. It has attributes which relate to speed and efficiency\n3. Easy to pronounce and remember\n",
+          "createdAt": "2025-11-18T22:50:01Z",
+          "updatedAt": "2025-11-18T22:50:01Z"
+        },
+        {
+          "author": "acbegen",
+          "authorAssociation": "NONE",
+          "body": "As we are moving forward with MSF, this one should be CMSF (I think it is good that it is similar to CMAF itself).",
+          "createdAt": "2025-11-19T10:56:46Z",
+          "updatedAt": "2025-11-19T10:56:46Z"
         }
       ]
     },
