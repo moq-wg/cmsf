@@ -1,8 +1,8 @@
 ---
-title: "CARP - a CMAF compliant implementation of WARP"
+title: "CMSF- a CMAF compliant implementation of MOQT Streaming Format"
 category: info
 
-docname: draft-wilaw-moq-carp-latest
+docname: draft-wilaw-moq-cmsf-latest
 submissiontype: IETF
 number:
 date:
@@ -13,15 +13,15 @@ workgroup: "Media Over QUIC"
 keyword:
  - moq
  - moqt
- - WARP
+ - MSF
  - CMAF
 venue:
   group: "Media Over QUIC"
   type: "Working Group"
   mail: "moq@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/moq/"
-  github: "wilaw/carp"
-  latest: "https://wilaw.github.io/carp/draft-wilaw-moq-carp.html"
+  github: "wilaw/cmsf"
+  latest: "https://wilaw.github.io/cmsf/draft-wilaw-moq-cmsf.html"
 
 author:
   -
@@ -32,7 +32,7 @@ author:
 
 normative:
   MoQTransport: I-D.draft-ietf-moq-transport-10
-  WARP:  I-D.draft-ietf-moq-warp
+  MSF:  I-D.draft-ietf-moq-warp
   CMAF:
     author:
       - name: International Organization for Standardization
@@ -49,24 +49,24 @@ informative:
 
 --- abstract
 
-This document updates [WARP] by defining a new optional feature for the streaming format.
-It specifies the syntax and semantics for adding CMAF-packaged media [CMAF] to WARP.
+This document updates [MSF] by defining a new optional feature for the streaming format.
+It specifies the syntax and semantics for adding CMAF-packaged media [CMAF] to MSF.
 
 
 --- middle
 
 # Introduction
 
-CARP Streaming Format (CARP) is a media format designed to deliver CMAF [CMAF] and
-LOC [LOC] compliant media content over MOQ Transport (MOQT) [MoQTransport]. CARP extends
-WARP and retains all the scope, capabilities and features of WARP including the catalog
-format, timeline, ABR switching and LOC support. CARP is targeted at real-time and
+CMAF compliant MOQT Streaming Format (CMSF) is a media format designed to deliver CMAF [CMAF] and
+LOC [LOC] compliant media content over MOQ Transport (MOQT) [MoQTransport]. CMSF extends
+MSF and retains all the scope, capabilities and features of MSF including the catalog
+format, timeline, ABR switching and LOC support. MSF is targeted at real-time and
 interactive levels of live latency, as well as VOD content.
 
-This document describes version 1 of the CARP streaming format.
+This document describes version 1 of the CMSF streaming format.
 
-# WARP Extension
-All of the specifications, requirements, and terminology defined in [WARP] apply to
+# MSF Extension
+All of the specifications, requirements, and terminology defined in [MSF] apply to
 implementations of this extension unless explicitly noted otherwise in this document.
 
 # CMAF Packaging
@@ -121,14 +121,14 @@ Each MOQT Group
 ## Catalog description
 
 ### CMAF packaging type
-This specification extends the allowed packaging values defined in WARP Section 5.1.12
+This specification extends the allowed packaging values defined in [MSF]
 to include one new entry, as defined in Table 1 below:
 
 | Name              |   Value         |      Reference        |
 |:==================|:================|:======================|
 | CMAF              | cmaf            | This RFC              |
 
-Every Track entry in a CARP catalog carrying CMAF-packaged media data MUST declare a
+Every Track entry in a CMSF catalog carrying CMAF-packaged media data MUST declare a
 "packaging" type value of "cmaf".
 
 ### Max SAP starting types
@@ -152,12 +152,12 @@ A number indicating the maximum SAP type the MOQT Objects in the track start wit
 ## Event Timelines
 
 ### SAP Type timeline {#saptypetimeline}
-CARP defines a special instance of an Event Timeline track, termed the SAP Type timeline
+CMSF defines a special instance of an Event Timeline track, termed the SAP Type timeline
 track. Its purpose is to convey information about the distribution of Stream Access Point
 types and their associated Earlist Presentation Times.
 
 In the catalog, the SAP-type timeline track MUST include a 'packaging' value of 'eventtimeline"
-and MUST include an 'eventType' value of 'org.ietf.moq.carp.sap'.
+and MUST include an 'eventType' value of 'org.ietf.moq.cmsf.sap'.
 
 In the SAP Type timeline JSON payload:
 
