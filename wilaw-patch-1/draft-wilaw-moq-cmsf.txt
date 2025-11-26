@@ -4,27 +4,27 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                           23 October 2025
-Expires: 26 April 2026
+Intended status: Informational                          26 November 2025
+Expires: 30 May 2026
 
 
-             CARP - a CMAF compliant implementation of WARP
-                       draft-law-moq-carp-latest
+     CMSF- a CMAF compliant implementation of MOQT Streaming Format
+                      draft-wilaw-moq-cmsf-latest
 
 Abstract
 
-   This document updates [WARP] by defining a new optional feature for
+   This document updates [MSF] by defining a new optional feature for
    the streaming format.  It specifies the syntax and semantics for
-   adding CMAF-packaged media [CMAF] to WARP.
+   adding CMAF-packaged media [CMAF] to MSF.
 
 About This Document
 
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://wilaw.github.io/carp/draft-law-moq-carp.html.  Status
+   https://wilaw.github.io/cmsf/draft-wilaw-moq-cmsf.html.  Status
    information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-law-moq-carp/.
+   https://datatracker.ietf.org/doc/draft-wilaw-moq-cmsf/.
 
    Discussion of this document takes place on the Media Over QUIC
    Working Group mailing list (mailto:moq@ietf.org), which is archived
@@ -32,7 +32,7 @@ About This Document
    https://www.ietf.org/mailman/listinfo/moq/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/wilaw/carp.
+   https://github.com/wilaw/cmsf.
 
 Status of This Memo
 
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 April 2026.
+   This Internet-Draft will expire on 30 May 2026.
 
 Copyright Notice
 
@@ -68,7 +68,7 @@ Copyright Notice
 Table of Contents
 
    1.  Introduction
-   2.  WARP Extension
+   2.  MSF Extension
    3.  CMAF Packaging
      3.1.  Initialization headers
      3.2.  Switching sets and tracks
@@ -92,19 +92,20 @@ Table of Contents
 
 1.  Introduction
 
-   CARP Streaming Format (CARP) is a media format designed to deliver
-   CMAF [CMAF] and LOC [LOC] compliant media content over MOQ Transport
-   (MOQT) [MoQTransport].  CARP extends WARP and retains all the scope,
-   capabilities and features of WARP including the catalog format,
-   timeline, ABR switching and LOC support.  CARP is targeted at real-
-   time and interactive levels of live latency, as well as VOD content.
+   CMAF compliant MOQT Streaming Format (CMSF) is a media format
+   designed to deliver CMAF [CMAF] and LOC [LOC] compliant media content
+   over MOQ Transport (MOQT) [MoQTransport].  CMSF extends MSF and
+   retains all the scope, capabilities and features of MSF including the
+   catalog format, timeline, ABR switching and LOC support.  MSF is
+   targeted at real-time and interactive levels of live latency, as well
+   as VOD content.
 
-   This document describes version 1 of the CARP streaming format.
+   This document describes version 1 of the CMSF streaming format.
 
-2.  WARP Extension
+2.  MSF Extension
 
    All of the specifications, requirements, and terminology defined in
-   [WARP] apply to implementations of this extension unless explicitly
+   [MSF] apply to implementations of this extension unless explicitly
    noted otherwise in this document.
 
 3.  CMAF Packaging
@@ -176,8 +177,7 @@ Table of Contents
 3.5.1.  CMAF packaging type
 
    This specification extends the allowed packaging values defined in
-   WARP Section 5.1.12 to include one new entry, as defined in Table 1
-   below:
+   [MSF] to include one new entry, as defined in Table 1 below:
 
                        +======+=======+===========+
                        | Name | Value | Reference |
@@ -187,7 +187,7 @@ Table of Contents
 
                                  Table 1
 
-   Every Track entry in a CARP catalog carrying CMAF-packaged media data
+   Every Track entry in a CMSF catalog carrying CMAF-packaged media data
    MUST declare a "packaging" type value of "cmaf".
 
 3.5.2.  Max SAP starting types
@@ -225,14 +225,14 @@ Table of Contents
 
 3.6.1.  SAP Type timeline
 
-   CARP defines a special instance of an Event Timeline track, termed
+   CMSF defines a special instance of an Event Timeline track, termed
    the SAP Type timeline track.  Its purpose is to convey information
    about the distribution of Stream Access Point types and their
    associated Earlist Presentation Times.
 
    In the catalog, the SAP-type timeline track MUST include a
    'packaging' value of 'eventtimeline" and MUST include an 'eventType'
-   value of 'org.ietf.moq.carp.sap'.
+   value of 'org.ietf.moq.cmsf.sap'.
 
    In the SAP Type timeline JSON payload:
 
@@ -394,6 +394,12 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-moq-
               transport-10>.
 
+   [MSF]      Law, W., Curley, L., Vasiliev, V., Nandakumar, S., and K.
+              Pugin, "WARP Streaming Format", Work in Progress,
+              Internet-Draft, draft-ietf-moq-warp-01, 22 July 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-moq-
+              warp-01>.
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -402,12 +408,6 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
-
-   [WARP]     Law, W., Curley, L., Vasiliev, V., Nandakumar, S., and K.
-              Pugin, "WARP Streaming Format", Work in Progress,
-              Internet-Draft, draft-ietf-moq-warp-01, 22 July 2025,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-moq-
-              warp-01>.
 
 Acknowledgments
 

@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>CARP - a CMAF compliant implementation of WARP</title>
+<title>CMSF- a CMAF compliant implementation of MOQT Streaming Format</title>
 <meta content="Will Law" name="author">
 <meta content="
        This document updates   by defining a new optional feature for the streaming format.
-It specifies the syntax and semantics for adding CMAF-packaged media   to WARP. 
+It specifies the syntax and semantics for adding CMAF-packaged media   to MSF. 
     " name="description">
 <meta content="xml2rfc 3.31.0" name="generator">
 <meta content="moq" name="keyword">
 <meta content="moqt" name="keyword">
-<meta content="WARP" name="keyword">
+<meta content="MSF" name="keyword">
 <meta content="CMAF" name="keyword">
-<meta content="draft-law-moq-carp-latest" name="ietf.draft">
+<meta content="draft-wilaw-moq-cmsf-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.31.0
     Python 3.12.12
@@ -30,7 +30,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media   to WARP.
     requests 2.32.5
     wcwidth 0.2.14
 -->
-<link href="draft-law-moq-carp.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-wilaw-moq-cmsf.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1046,12 +1046,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">CARP - a CMAF compliant implementation o</td>
-<td class="right">October 2025</td>
+<td class="center">CMSF- a CMAF compliant implementation of</td>
+<td class="right">November 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Law</td>
-<td class="center">Expires 26 April 2026</td>
+<td class="center">Expires 30 May 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,15 +1061,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dt class="label-workgroup">Workgroup:</dt>
 <dd class="workgroup">Media Over QUIC</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-law-moq-carp-latest</dd>
+<dd class="internet-draft">draft-wilaw-moq-cmsf-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-23" class="published">23 October 2025</time>
+<time datetime="2025-11-26" class="published">26 November 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-26">26 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-05-30">30 May 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1079,11 +1079,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">CARP - a CMAF compliant implementation of WARP</h1>
+<h1 id="title">CMSF- a CMAF compliant implementation of MOQT Streaming Format</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document updates <span>[<a href="#WARP" class="cite xref">WARP</a>]</span> by defining a new optional feature for the streaming format.
-It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a href="#CMAF" class="cite xref">CMAF</a>]</span> to WARP.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document updates <span>[<a href="#MSF" class="cite xref">MSF</a>]</span> by defining a new optional feature for the streaming format.
+It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a href="#CMAF" class="cite xref">CMAF</a>]</span> to MSF.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1091,15 +1091,15 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
 <p id="section-note.1-2">
-        The latest revision of this draft can be found at <span><a href="https://wilaw.github.io/carp/draft-law-moq-carp.html">https://wilaw.github.io/carp/draft-law-moq-carp.html</a></span>.
-        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-law-moq-carp/">https://datatracker.ietf.org/doc/draft-law-moq-carp/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+        The latest revision of this draft can be found at <span><a href="https://wilaw.github.io/cmsf/draft-wilaw-moq-cmsf.html">https://wilaw.github.io/cmsf/draft-wilaw-moq-cmsf.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-wilaw-moq-cmsf/">https://datatracker.ietf.org/doc/draft-wilaw-moq-cmsf/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
 <p id="section-note.1-3">
         Discussion of this document takes place on the
         Media Over QUIC Working Group mailing list (<span><a href="mailto:moq@ietf.org">mailto:moq@ietf.org</a></span>),
         which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/moq/">https://mailarchive.ietf.org/arch/browse/moq/</a></span>.
         Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/moq/">https://www.ietf.org/mailman/listinfo/moq/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <p id="section-note.1-4">Source for this draft and an issue tracker can be found at
-        <span><a href="https://github.com/wilaw/carp">https://github.com/wilaw/carp</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+        <span><a href="https://github.com/wilaw/cmsf">https://github.com/wilaw/cmsf</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1120,7 +1120,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 May 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1153,7 +1153,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-warp-extension" class="internal xref">WARP Extension</a></p>
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-msf-extension" class="internal xref">MSF Extension</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-cmaf-packaging" class="internal xref">CMAF Packaging</a></p>
@@ -1229,20 +1229,20 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">CARP Streaming Format (CARP) is a media format designed to deliver CMAF <span>[<a href="#CMAF" class="cite xref">CMAF</a>]</span> and
-LOC [LOC] compliant media content over MOQ Transport (MOQT) <span>[<a href="#MoQTransport" class="cite xref">MoQTransport</a>]</span>. CARP extends
-WARP and retains all the scope, capabilities and features of WARP including the catalog
-format, timeline, ABR switching and LOC support. CARP is targeted at real-time and
+<p id="section-1-1">CMAF compliant MOQT Streaming Format (CMSF) is a media format designed to deliver CMAF <span>[<a href="#CMAF" class="cite xref">CMAF</a>]</span> and
+LOC [LOC] compliant media content over MOQ Transport (MOQT) <span>[<a href="#MoQTransport" class="cite xref">MoQTransport</a>]</span>. CMSF extends
+MSF and retains all the scope, capabilities and features of MSF including the catalog
+format, timeline, ABR switching and LOC support. MSF is targeted at real-time and
 interactive levels of live latency, as well as VOD content.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">This document describes version 1 of the CARP streaming format.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-2">This document describes version 1 of the CMSF streaming format.<a href="#section-1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="warp-extension">
+<div id="msf-extension">
 <section id="section-2">
-      <h2 id="name-warp-extension">
-<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-warp-extension" class="section-name selfRef">WARP Extension</a>
+      <h2 id="name-msf-extension">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-msf-extension" class="section-name selfRef">MSF Extension</a>
       </h2>
-<p id="section-2-1">All of the specifications, requirements, and terminology defined in <span>[<a href="#WARP" class="cite xref">WARP</a>]</span> apply to
+<p id="section-2-1">All of the specifications, requirements, and terminology defined in <span>[<a href="#MSF" class="cite xref">MSF</a>]</span> apply to
 implementations of this extension unless explicitly noted otherwise in this document.<a href="#section-2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1338,7 +1338,7 @@ Chunks <span class="bcp14">MUST</span> not span Groups.<a href="#section-3.4-2.3
           <h4 id="name-cmaf-packaging-type">
 <a href="#section-3.5.1" class="section-number selfRef">3.5.1. </a><a href="#name-cmaf-packaging-type" class="section-name selfRef">CMAF packaging type</a>
           </h4>
-<p id="section-3.5.1-1">This specification extends the allowed packaging values defined in WARP Section 5.1.12
+<p id="section-3.5.1-1">This specification extends the allowed packaging values defined in <span>[<a href="#MSF" class="cite xref">MSF</a>]</span>
 to include one new entry, as defined in Table 1 below:<a href="#section-3.5.1-1" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
             <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
@@ -1357,7 +1357,7 @@ to include one new entry, as defined in Table 1 below:<a href="#section-3.5.1-1"
               </tr>
             </tbody>
           </table>
-<p id="section-3.5.1-3">Every Track entry in a CARP catalog carrying CMAF-packaged media data <span class="bcp14">MUST</span> declare a
+<p id="section-3.5.1-3">Every Track entry in a CMSF catalog carrying CMAF-packaged media data <span class="bcp14">MUST</span> declare a
 "packaging" type value of "cmaf".<a href="#section-3.5.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1425,11 +1425,11 @@ to include one new entry, as defined in Table 1 below:<a href="#section-3.5.1-1"
           <h4 id="name-sap-type-timeline">
 <a href="#section-3.6.1" class="section-number selfRef">3.6.1. </a><a href="#name-sap-type-timeline" class="section-name selfRef">SAP Type timeline</a>
           </h4>
-<p id="section-3.6.1-1">CARP defines a special instance of an Event Timeline track, termed the SAP Type timeline
+<p id="section-3.6.1-1">CMSF defines a special instance of an Event Timeline track, termed the SAP Type timeline
 track. Its purpose is to convey information about the distribution of Stream Access Point
 types and their associated Earlist Presentation Times.<a href="#section-3.6.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.6.1-2">In the catalog, the SAP-type timeline track <span class="bcp14">MUST</span> include a 'packaging' value of 'eventtimeline"
-and <span class="bcp14">MUST</span> include an 'eventType' value of 'org.ietf.moq.carp.sap'.<a href="#section-3.6.1-2" class="pilcrow">¶</a></p>
+and <span class="bcp14">MUST</span> include an 'eventType' value of 'org.ietf.moq.cmsf.sap'.<a href="#section-3.6.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.6.1-3">In the SAP Type timeline JSON payload:<a href="#section-3.6.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.6.1-4.1">
@@ -1620,17 +1620,17 @@ appear in all capitals, as shown here.<a href="#section-5-1" class="pilcrow">¶<
       <dd>
 <span class="refAuthor">Curley, L.</span>, <span class="refAuthor">Pugin, K.</span>, <span class="refAuthor">Nandakumar, S.</span>, <span class="refAuthor">Vasiliev, V.</span>, and <span class="refAuthor">I. Swett</span>, <span class="refTitle">"Media over QUIC Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-moq-transport-10</span>, <time datetime="2025-03-03" class="refDate">3 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-transport-10">https://datatracker.ietf.org/doc/html/draft-ietf-moq-transport-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="MSF">[MSF]</dt>
+      <dd>
+<span class="refAuthor">Law, W.</span>, <span class="refAuthor">Curley, L.</span>, <span class="refAuthor">Vasiliev, V.</span>, <span class="refAuthor">Nandakumar, S.</span>, and <span class="refAuthor">K. Pugin</span>, <span class="refTitle">"WARP Streaming Format"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-moq-warp-01</span>, <time datetime="2025-07-22" class="refDate">22 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01">https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-      <dd>
-<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="WARP">[WARP]</dt>
     <dd>
-<span class="refAuthor">Law, W.</span>, <span class="refAuthor">Curley, L.</span>, <span class="refAuthor">Vasiliev, V.</span>, <span class="refAuthor">Nandakumar, S.</span>, and <span class="refAuthor">K. Pugin</span>, <span class="refTitle">"WARP Streaming Format"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-moq-warp-01</span>, <time datetime="2025-07-22" class="refDate">22 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01">https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01</a>&gt;</span>. </dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
