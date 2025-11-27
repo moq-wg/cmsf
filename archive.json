@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-20T01:14:32.978202+00:00",
+  "timestamp": "2025-11-27T01:15:03.273228+00:00",
   "repo": "wilaw/carp",
   "labels": [
     {
@@ -659,6 +659,46 @@
           "body": "",
           "createdAt": "2025-10-23T08:32:31Z",
           "updatedAt": "2025-10-23T08:32:31Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDOPVWI5861p41h",
+      "title": "Rename CARP to CMSF and update specifications",
+      "url": "https://github.com/wilaw/carp/pull/13",
+      "state": "OPEN",
+      "author": "wilaw",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This document updates the streaming format from CARP to CMSF, reflecting changes in title, document name, and associated specifications. It retains the structure and features while aligning with the new CMSF terminology.",
+      "createdAt": "2025-11-26T13:38:00Z",
+      "updatedAt": "2025-11-26T17:51:06Z",
+      "baseRepository": "wilaw/carp",
+      "baseRefName": "main",
+      "baseRefOid": "47655d5621dc26de607e7450f1e679823b801e66",
+      "headRepository": "wilaw/carp",
+      "headRefName": "wilaw-patch-1",
+      "headRefOid": "cc3313a90a1d2766f311cb44fbbb6fed27b99131",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOPVWI587RVuIy",
+          "commit": {
+            "abbreviatedOid": "cc3313a"
+          },
+          "author": "yekuiwang",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-26T17:51:06Z",
+          "updatedAt": "2025-11-26T17:51:06Z",
           "comments": []
         }
       ]
