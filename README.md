@@ -4,11 +4,10 @@
 
 This is the working area for the individual Internet-Draft, "CMSF - a CMAF compliant implementation of MSF".
 
-* [Editor's Copy](https://wilaw.github.io/cmsf)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-law-moq-cmsf)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-law-moq-cmsf)
-* [Compare Editor's Copy to Individual Draft](https://wilaw.github.io/carp/#go.draft-law-moq-cmsf.diff)
-
+* [Editor's Copy](https://moq-wg.github.io/cmsf)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-moq-cmsf)
+* [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-moq-cmsf)
+* [Compare Editor's Copy to Working Group Draft](https://moq-wg.github.io/cmsf/#go.draft-ietf-moq-cmsf.diff)
 
 ## Contributing
 
