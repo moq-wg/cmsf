@@ -2,7 +2,7 @@
 title: "CMSF- a CMAF compliant implementation of MOQT Streaming Format"
 category: info
 
-docname: draft-wilaw-moq-cmsf-latest
+docname: draft-ietf-moq-cmsf-latest
 submissiontype: IETF
 number:
 date:
@@ -20,8 +20,8 @@ venue:
   type: "Working Group"
   mail: "moq@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/moq/"
-  github: "wilaw/cmsf"
-  latest: "https://wilaw.github.io/cmsf/draft-wilaw-moq-cmsf.html"
+  github: "moq-wg/cmsf"
+  latest: "https://moq-wg.github.io/cmsf/draft-wilaw-moq-cmsf.html"
 
 author:
   -
