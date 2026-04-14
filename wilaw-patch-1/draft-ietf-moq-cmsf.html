@@ -10,25 +10,25 @@
        This document updates   by defining a new optional feature for the streaming format.
 It specifies the syntax and semantics for adding CMAF-packaged media   to MSF. 
     " name="description">
-<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="xml2rfc 3.32.0" name="generator">
 <meta content="moq" name="keyword">
 <meta content="moqt" name="keyword">
 <meta content="MSF" name="keyword">
 <meta content="CMAF" name="keyword">
 <meta content="draft-ietf-moq-cmsf-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.31.0
+  xml2rfc 3.32.0
     Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.5.0
+    lxml 6.0.2
+    platformdirs 4.9.4
     pycountry 24.6.1
-    PyYAML 6.0.2
+    PyYAML 6.0.3
     requests 2.32.5
-    wcwidth 0.2.14
+    wcwidth 0.6.0
 -->
 <link href="draft-ietf-moq-cmsf.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -169,7 +169,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media   to MSF.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Oxygen Mono';
@@ -177,7 +177,8 @@ It specifies the syntax and semantics for adding CMAF-packaged media   to MSF.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 }
 
 @font-face {
@@ -569,6 +570,7 @@ aside, blockquote {
 }
 blockquote {
   margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
 }
 cite {
   display: block;
@@ -639,7 +641,7 @@ a.pilcrow {
   }
 }
 @media not print {
-  :hover > a.pilcrow {
+  :hover > a.pilcrow, a.pilcrow:focus {
     opacity: 1;
   }
   a.pilcrow[href]:hover {
@@ -1047,11 +1049,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">CMSF- a CMAF compliant implementation of</td>
-<td class="right">December 2025</td>
+<td class="right">April 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Law</td>
-<td class="center">Expires 4 June 2026</td>
+<td class="center">Expires 16 October 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-moq-cmsf-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-12-01" class="published">1 December 2025</time>
+<time datetime="2026-04-14" class="published">14 April 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-06-04">4 June 2026</time></dd>
+<dd class="expires"><time datetime="2026-10-16">16 October 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1120,7 +1122,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 June 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 16 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1129,7 +1131,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2025 IETF Trust and the persons identified as the
+            Copyright (c) 2026 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1195,30 +1197,66 @@ It specifies the syntax and semantics for adding CMAF-packaged media <span>[<a h
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-catalog-examples" class="internal xref">Catalog Examples</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-content-protection" class="internal xref">Content Protection</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-simulcast-video-tracks-3-al" class="internal xref">Simulcast video tracks - 3 alternate video qualities along with audio</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-content-protection-catalog-" class="internal xref">Content Protection catalog fields</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.1">
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-content-protections" class="internal xref">Content Protections</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.2">
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-content-protection-referenc" class="internal xref">Content Protection Reference IDs</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-initialization-data-for-pro" class="internal xref">Initialization data for protected tracks</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-clearkey-content-protection" class="internal xref">ClearKey content protection</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-catalog-examples" class="internal xref">Catalog Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-simulcast-video-tracks-3-al" class="internal xref">Simulcast video tracks - 3 alternate video qualities along with audio</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-drm-protected-video-with-au" class="internal xref">DRM-protected video with audio</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-clearkey-protected-video" class="internal xref">ClearKey-protected video</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1302,9 +1340,6 @@ initialization fragment.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
           <li class="normal" id="section-3.3-2.3">
             <p id="section-3.3-2.3.1"><span class="bcp14">MUST</span> contain a single [ISOBMFF] track.<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-3.3-2.4">
-            <p id="section-3.3-2.4.1"><span class="bcp14">MUST</span> contain media content encoded in decode order.<a href="#section-3.3-2.4.1" class="pilcrow">¶</a></p>
-</li>
         </ul>
 </section>
 </div>
@@ -1316,10 +1351,10 @@ initialization fragment.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
 <p id="section-3.4-1">Each MOQT Group<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4-2.1">
-            <p id="section-3.4-2.1.1"><span class="bcp14">MUST</span> begin with an Object containing a stream access point (SAP type 1 or 2).<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.4-2.1.1"><span class="bcp14">MUST</span> begin with an Object containing a stream access point (SAP) type 1 or 2.<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.4-2.2">
-            <p id="section-3.4-2.2.1"><span class="bcp14">MUST</span> contain one or more contiguous Groups of Pictures (GOPs).<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-3.4-2.2.1"><span class="bcp14">MUST</span> contain one or more contiguous independently coded sequences of media samples.<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.4-2.3">
             <p id="section-3.4-2.3.1">The Group boundary <span class="bcp14">MUST</span> align with a CMAF Fragment boundary. CMAF Fragments and CMAF
@@ -1492,22 +1527,313 @@ thus presentable.<a href="#section-3.6.2-1" class="pilcrow">¶</a></p>
 </div>
 </section>
 </div>
-<div id="catalog-examples">
+<div id="contentprotection">
 <section id="section-4">
-      <h2 id="name-catalog-examples">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-catalog-examples" class="section-name selfRef">Catalog Examples</a>
+      <h2 id="name-content-protection">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-content-protection" class="section-name selfRef">Content Protection</a>
       </h2>
-<p id="section-4-1">The following section provides non-normative JSON examples of various catalogs
-compliant with this draft.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<div id="simulcast-video-tracks-3-alternate-video-qualities-along-with-audio">
+<p id="section-4-1">CMSF supports content protection using Common Encryption <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> for
+CMAF-packaged media. This enables interoperability with existing DRM ecosystems
+by reusing the signaling model established by DASH <span>[<a href="#DASH" class="cite xref">DASH</a>]</span> and the DASH-IF
+Encryption and Content Protection (ECCP) guidelines <span>[<a href="#DASHIF-ECCP" class="cite xref">DASHIF-ECCP</a>]</span>.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Content protection in CMSF differs from the encryption scheme defined in
+<span>[<a href="#MSF" class="cite xref">MSF</a>]</span> Section 3.7. While MSF defines an end-to-end encryption mechanism
+using MoQ Secure Objects for LOC-packaged content, CMSF uses ISO Common
+Encryption <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> applied at the CMAF media layer. In CMSF, the media
+samples within CMAF chunks are encrypted as specified by <span>[<a href="#CENC" class="cite xref">CENC</a>]</span>, and the
+DRM signaling is carried in the catalog rather than in per-object headers.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">A key advantage of CENC-based content protection is that decryption can be
+delegated to a Content Decryption Module (CDM) operating at a deeper system
+level, potentially in hardware or a trusted execution environment. This
+enables robust content protection through commercial DRM systems such as
+Widevine, PlayReady, and FairPlay Streaming, where the decryption keys and
+decrypted media are handled within a secure pipeline that is not accessible
+to the application layer. This hardware-level protection is a requirement
+for high-value content distribution and is not achievable with
+application-layer encryption schemes alone.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div id="content-protection-catalog-fields">
 <section id="section-4.1">
-        <h3 id="name-simulcast-video-tracks-3-al">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-simulcast-video-tracks-3-al" class="section-name selfRef">Simulcast video tracks - 3 alternate video qualities along with audio</a>
+        <h3 id="name-content-protection-catalog-">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-content-protection-catalog-" class="section-name selfRef">Content Protection catalog fields</a>
         </h3>
-<p id="section-4.1-1">This example shows catalog for a media producer capable of sending 3
+<p id="section-4.1-1">Content protection information is signaled in the catalog at two levels:
+a root-level <code>contentProtections</code> array containing DRM system descriptions,
+and track-level references to those descriptions.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<div id="contentprotections">
+<section id="section-4.1.1">
+          <h4 id="name-content-protections">
+<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-content-protections" class="section-name selfRef">Content Protections</a>
+          </h4>
+<p id="section-4.1.1-1">Location: R    Required: Optional   JSON Type: Array<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1-2">A JSON array of Content Protection objects at the root level of the catalog.
+Each object describes a single DRM system configuration. Content protection
+information <span class="bcp14">MUST NOT</span> be duplicated at the track level; all tracks reference
+the root-level entries.<a href="#section-4.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1.1-3">Each Content Protection object contains the following fields:<a href="#section-4.1.1-3" class="pilcrow">¶</a></p>
+<div id="refid">
+<section id="section-4.1.1.1">
+            <h5 id="name-reference-id">
+<a href="#section-4.1.1.1" class="section-number selfRef">4.1.1.1. </a><a href="#name-reference-id" class="section-name selfRef">Reference ID</a>
+            </h5>
+<p id="section-4.1.1.1-1">Location: CP    Required: Required   JSON Type: String<a href="#section-4.1.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.1-2">A unique identifier for this content protection entry. Track entries
+reference this value via the <code>contentProtectionRefIDs</code> field.<a href="#section-4.1.1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="defaultkid">
+<section id="section-4.1.1.2">
+            <h5 id="name-default-kids">
+<a href="#section-4.1.1.2" class="section-number selfRef">4.1.1.2. </a><a href="#name-default-kids" class="section-name selfRef">Default KIDs</a>
+            </h5>
+<p id="section-4.1.1.2-1">Location: CP    Required: Required   JSON Type: Array of Strings<a href="#section-4.1.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.2-2">An array of default Key IDs (KIDs) expressed as UUID strings in the format
+"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx". These correspond to the
+default_KID values defined in <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> Section 5. When multiple KIDs are
+present, each identifies a key used to encrypt a different set of samples
+(e.g., separate keys for different track types).<a href="#section-4.1.1.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="scheme">
+<section id="section-4.1.1.3">
+            <h5 id="name-scheme">
+<a href="#section-4.1.1.3" class="section-number selfRef">4.1.1.3. </a><a href="#name-scheme" class="section-name selfRef">Scheme</a>
+            </h5>
+<p id="section-4.1.1.3-1">Location: CP    Required: Required   JSON Type: String<a href="#section-4.1.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.3-2">The Common Encryption protection scheme as defined in <span>[<a href="#CENC" class="cite xref">CENC</a>]</span>. Allowed
+values are:<a href="#section-4.1.1.3-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+              <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+                <tr>
+                  <th class="text-left" rowspan="1" colspan="1">Name</th>
+                  <th class="text-left" rowspan="1" colspan="1">Value</th>
+                  <th class="text-left" rowspan="1" colspan="1">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">CENC</td>
+                  <td class="text-left" rowspan="1" colspan="1">cenc</td>
+                  <td class="text-left" rowspan="1" colspan="1">AES-CTR full sample and sub-sample encryption</td>
+                </tr>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">CBCS</td>
+                  <td class="text-left" rowspan="1" colspan="1">cbcs</td>
+                  <td class="text-left" rowspan="1" colspan="1">AES-CBC pattern-based encryption with subsample</td>
+                </tr>
+              </tbody>
+            </table>
+<p id="section-4.1.1.3-4">The <span class="bcp14">RECOMMENDED</span> scheme for CMSF is "cbcs" as it provides better
+compatibility with hardware decoders and aligns with DASH-IF ECCP
+recommendations <span>[<a href="#DASHIF-ECCP" class="cite xref">DASHIF-ECCP</a>]</span>.<a href="#section-4.1.1.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="drmsystem">
+<section id="section-4.1.1.4">
+            <h5 id="name-drm-system">
+<a href="#section-4.1.1.4" class="section-number selfRef">4.1.1.4. </a><a href="#name-drm-system" class="section-name selfRef">DRM System</a>
+            </h5>
+<p id="section-4.1.1.4-1">Location: CP    Required: Required   JSON Type: Object<a href="#section-4.1.1.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4-2">An object describing the DRM system associated with this content protection
+entry. It contains the following fields:<a href="#section-4.1.1.4-2" class="pilcrow">¶</a></p>
+<div id="systemid">
+<section id="section-4.1.1.4.1">
+              <h6 id="name-system-id">
+<a href="#section-4.1.1.4.1" class="section-number selfRef">4.1.1.4.1. </a><a href="#name-system-id" class="section-name selfRef">System ID</a>
+              </h6>
+<p id="section-4.1.1.4.1-1">Location: DS    Required: Required   JSON Type: String<a href="#section-4.1.1.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.1-2">The DRM System ID expressed as a UUID string. Well-known system IDs include:<a href="#section-4.1.1.4.1-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-4">
+                <caption><a href="#table-4" class="selfRef">Table 4</a></caption>
+<thead>
+                  <tr>
+                    <th class="text-left" rowspan="1" colspan="1">DRM System</th>
+                    <th class="text-left" rowspan="1" colspan="1">System ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-left" rowspan="1" colspan="1">Widevine</td>
+                    <td class="text-left" rowspan="1" colspan="1">edef8ba9-79d6-4ace-a3c8-27dcd51d21ed</td>
+                  </tr>
+                  <tr>
+                    <td class="text-left" rowspan="1" colspan="1">PlayReady</td>
+                    <td class="text-left" rowspan="1" colspan="1">9a04f079-9840-4286-ab92-e65be0885f95</td>
+                  </tr>
+                  <tr>
+                    <td class="text-left" rowspan="1" colspan="1">FairPlay</td>
+                    <td class="text-left" rowspan="1" colspan="1">94ce86fb-07ff-4f43-adb8-93d2fa968ca2</td>
+                  </tr>
+                  <tr>
+                    <td class="text-left" rowspan="1" colspan="1">ClearKey</td>
+                    <td class="text-left" rowspan="1" colspan="1">1077efec-c0b2-4d02-ace3-3c1e52e2fb4b</td>
+                  </tr>
+                </tbody>
+              </table>
+<p id="section-4.1.1.4.1-4">The ClearKey system ID follows the W3C EME specification and corresponds
+to the DASH-IF ECCP "Explicit Clear Key Content Protection" mechanism
+<span>[<a href="#DASHIF-ECCP" class="cite xref">DASHIF-ECCP</a>]</span>.<a href="#section-4.1.1.4.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="laurl">
+<section id="section-4.1.1.4.2">
+              <h6 id="name-license-url">
+<a href="#section-4.1.1.4.2" class="section-number selfRef">4.1.1.4.2. </a><a href="#name-license-url" class="section-name selfRef">License URL</a>
+              </h6>
+<p id="section-4.1.1.4.2-1">Location: DS    Required: Optional   JSON Type: Object<a href="#section-4.1.1.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.2-2">An object containing the URL of the license acquisition service. The object
+has the following fields:<a href="#section-4.1.1.4.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1.1.4.2-3.1">
+                  <p id="section-4.1.1.4.2-3.1.1"><code>url</code> (String, Required): The URL of the license server.<a href="#section-4.1.1.4.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-4.1.1.4.2-3.2">
+                  <p id="section-4.1.1.4.2-3.2.1"><code>type</code> (String, Optional): The license protocol type (e.g., "EME-1.0").<a href="#section-4.1.1.4.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</section>
+</div>
+<div id="certurl">
+<section id="section-4.1.1.4.3">
+              <h6 id="name-certificate-url">
+<a href="#section-4.1.1.4.3" class="section-number selfRef">4.1.1.4.3. </a><a href="#name-certificate-url" class="section-name selfRef">Certificate URL</a>
+              </h6>
+<p id="section-4.1.1.4.3-1">Location: DS    Required: Optional   JSON Type: Object<a href="#section-4.1.1.4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.3-2">An object containing the URL of the DRM certificate service. This field is
+<span class="bcp14">REQUIRED</span> for DRM systems that require a server certificate (e.g., FairPlay
+Streaming). The object has the following fields:<a href="#section-4.1.1.4.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1.1.4.3-3.1">
+                  <p id="section-4.1.1.4.3-3.1.1"><code>url</code> (String, Required): The URL of the certificate server.<a href="#section-4.1.1.4.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-4.1.1.4.3-3.2">
+                  <p id="section-4.1.1.4.3-3.2.1"><code>type</code> (String, Optional): The MIME type of the certificate resource
+(e.g., "application/pkcs7-mime", "application/x-x509-ca-cert"). This
+corresponds to the certType attribute defined in <span>[<a href="#DASHIF-ECCP" class="cite xref">DASHIF-ECCP</a>]</span>.<a href="#section-4.1.1.4.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</section>
+</div>
+<div id="authzurl">
+<section id="section-4.1.1.4.4">
+              <h6 id="name-authorization-url">
+<a href="#section-4.1.1.4.4" class="section-number selfRef">4.1.1.4.4. </a><a href="#name-authorization-url" class="section-name selfRef">Authorization URL</a>
+              </h6>
+<p id="section-4.1.1.4.4-1">Location: DS    Required: Optional   JSON Type: Object<a href="#section-4.1.1.4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.4-2">An object containing the URL of an authorization service. The object
+has the following fields:<a href="#section-4.1.1.4.4-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1.1.4.4-3.1">
+                  <p id="section-4.1.1.4.4-3.1.1"><code>url</code> (String, Required): The URL of the authorization server.<a href="#section-4.1.1.4.4-3.1.1" class="pilcrow">¶</a></p>
+</li>
+                <li class="normal" id="section-4.1.1.4.4-3.2">
+                  <p id="section-4.1.1.4.4-3.2.1"><code>type</code> (String, Optional): The authorization protocol type.<a href="#section-4.1.1.4.4-3.2.1" class="pilcrow">¶</a></p>
+</li>
+              </ul>
+</section>
+</div>
+<div id="pssh">
+<section id="section-4.1.1.4.5">
+              <h6 id="name-pssh">
+<a href="#section-4.1.1.4.5" class="section-number selfRef">4.1.1.4.5. </a><a href="#name-pssh" class="section-name selfRef">PSSH</a>
+              </h6>
+<p id="section-4.1.1.4.5-1">Location: DS    Required: Optional   JSON Type: String<a href="#section-4.1.1.4.5-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.5-2">A Base64-encoded <span>[<a href="#BASE64" class="cite xref">BASE64</a>]</span> Protection System Specific Header (PSSH) box
+as defined in <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> Section 8.1. The PSSH box contains DRM
+system-specific initialization data needed by the client to acquire
+a license. This field <span class="bcp14">SHOULD</span> be present for DRM systems that require
+PSSH data (e.g., Widevine, PlayReady).<a href="#section-4.1.1.4.5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="robustness">
+<section id="section-4.1.1.4.6">
+              <h6 id="name-robustness">
+<a href="#section-4.1.1.4.6" class="section-number selfRef">4.1.1.4.6. </a><a href="#name-robustness" class="section-name selfRef">Robustness</a>
+              </h6>
+<p id="section-4.1.1.4.6-1">Location: DS    Required: Optional   JSON Type: String<a href="#section-4.1.1.4.6-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1.4.6-2">A string indicating the minimum robustness level required by the DRM system.
+The interpretation of this value is DRM system-specific.<a href="#section-4.1.1.4.6-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="contentprotectionrefids">
+<section id="section-4.1.2">
+          <h4 id="name-content-protection-referenc">
+<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-content-protection-referenc" class="section-name selfRef">Content Protection Reference IDs</a>
+          </h4>
+<p id="section-4.1.2-1">Location: T    Required: Optional   JSON Type: Array of Strings<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-2">An array of Reference ID strings (see <a href="#refid" class="auto internal xref">Section 4.1.1.1</a>) identifying which content
+protection entries from the root-level <code>contentProtections</code> array apply to
+this track. When this field is present, the track content is encrypted
+using Common Encryption <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> and the subscriber <span class="bcp14">MUST</span> acquire appropriate
+licenses before decryption.<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-3">When this field is absent, the track content is not protected by Common
+Encryption.<a href="#section-4.1.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="initialization-data-for-protected-tracks">
+<section id="section-4.2">
+        <h3 id="name-initialization-data-for-pro">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-initialization-data-for-pro" class="section-name selfRef">Initialization data for protected tracks</a>
+        </h3>
+<p id="section-4.2-1">For protected CMAF tracks, the initialization data (carried in the catalog
+<code>initData</code> field as defined in Section 3.1) <span class="bcp14">MUST</span> include the Protection
+Scheme Information Box ('sinf') containing the Scheme Type Box ('schm')
+and Scheme Information Box ('schi') with the Track Encryption Box ('tenc')
+as specified in <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> Section 6. This enables the subscriber to determine
+the encryption parameters (default_isProtected, default_Per_Sample_IV_Size,
+default_KID) from the initialization segment.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="clearkey-content-protection">
+<section id="section-4.3">
+        <h3 id="name-clearkey-content-protection">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-clearkey-content-protection" class="section-name selfRef">ClearKey content protection</a>
+        </h3>
+<p id="section-4.3-1">For testing and development scenarios, CMSF supports ClearKey content
+protection using the W3C EME ClearKey mechanism. ClearKey uses the
+Common System ID "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" and follows
+the DASH-IF ECCP Explicit Clear Key Content Protection (ECCP) model
+<span>[<a href="#DASHIF-ECCP" class="cite xref">DASHIF-ECCP</a>]</span>.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">When using ClearKey:<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.3-3.1">
+            <p id="section-4.3-3.1.1">The <code>systemID</code> <span class="bcp14">MUST</span> be set to "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b".<a href="#section-4.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-3.2">
+            <p id="section-4.3-3.2.1">The <code>laURL</code> field <span class="bcp14">SHOULD</span> contain the URL of a ClearKey license server
+that implements the EME ClearKey protocol.<a href="#section-4.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-3.3">
+            <p id="section-4.3-3.3.1">The optional <code>pssh</code> field <span class="bcp14">SHOULD</span> contain a Base64-encoded PSSH box with
+version 1, the Common System ID, and the KID(s) in the KID list.<a href="#section-4.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="catalog-examples">
+<section id="section-5">
+      <h2 id="name-catalog-examples">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-catalog-examples" class="section-name selfRef">Catalog Examples</a>
+      </h2>
+<p id="section-5-1">The following section provides non-normative JSON examples of various catalogs
+compliant with this draft.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<div id="simulcast-video-tracks-3-alternate-video-qualities-along-with-audio">
+<section id="section-5.1">
+        <h3 id="name-simulcast-video-tracks-3-al">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-simulcast-video-tracks-3-al" class="section-name selfRef">Simulcast video tracks - 3 alternate video qualities along with audio</a>
+        </h3>
+<p id="section-5.1-1">This example shows catalog for a media producer capable of sending 3
 time-aligned video tracks for high definition, low definition and medium
-definition video qualities, along with an audio track.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<div class="breakable lang-json sourcecode" id="section-4.1-2">
+definition video qualities, along with an audio track.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<div class="breakable lang-json sourcecode" id="section-5.1-2">
 <pre>
 {
   "version": 1,
@@ -1569,70 +1895,242 @@ definition video qualities, along with an audio track.<a href="#section-4.1-1" c
     }
    ]
 }
-</pre><a href="#section-4.1-2" class="pilcrow">¶</a>
+</pre><a href="#section-5.1-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="drm-protected-video-with-audio">
+<section id="section-5.2">
+        <h3 id="name-drm-protected-video-with-au">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-drm-protected-video-with-au" class="section-name selfRef">DRM-protected video with audio</a>
+        </h3>
+<p id="section-5.2-1">This example shows a catalog for a single DRM-protected video track and an
+unprotected audio track. The video track is encrypted using CBCS and
+references three content protection entries: Widevine, PlayReady, and
+FairPlay.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<div class="breakable lang-json sourcecode" id="section-5.2-2">
+<pre>
+{
+  "version": 1,
+  "generatedAt": 1746104606044,
+  "contentProtections": [
+    {
+      "refID": "1",
+      "defaultKID": [
+        "01234567-89ab-cdef-0123-456789abcdef"
+      ],
+      "scheme": "cbcs",
+      "drmSystem": {
+        "systemID": "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+        "laURL": {
+          "url": "https://widevine-license.example.com/proxy"
+        },
+        "pssh": "AAAAP3Bzc2gAAAAA7e+LqXnWSs6jy..."
+      }
+    },
+    {
+      "refID": "2",
+      "defaultKID": [
+        "01234567-89ab-cdef-0123-456789abcdef"
+      ],
+      "scheme": "cbcs",
+      "drmSystem": {
+        "systemID": "9a04f079-9840-4286-ab92-e65be0885f95",
+        "laURL": {
+          "url": "https://playready-license.example.com/auth"
+        },
+        "pssh": "AAACvnBzc2gAAAAAmgTweZhAQoar..."
+      }
+    },
+    {
+      "refID": "3",
+      "defaultKID": [
+        "01234567-89ab-cdef-0123-456789abcdef"
+      ],
+      "scheme": "cbcs",
+      "drmSystem": {
+        "systemID": "94ce86fb-07ff-4f43-adb8-93d2fa968ca2",
+        "laURL": {
+          "url": "https://fps-license.example.com/api/licenses"
+        },
+        "certURL": {
+          "url": "https://fps-license.example.com/cert"
+        }
+      }
+    }
+  ],
+  "tracks": [
+    {
+      "name": "video_protected",
+      "packaging": "cmaf",
+      "isLive": true,
+      "role": "video",
+      "renderGroup": 1,
+      "altGroup": 1,
+      "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+      "codec": "avc3.4D401F",
+      "framerate": 25,
+      "bitrate": 581905,
+      "width": 1280,
+      "height": 720,
+      "contentProtectionRefIDs": ["1", "2", "3"]
+    },
+    {
+      "name": "audio",
+      "packaging": "cmaf",
+      "isLive": true,
+      "role": "audio",
+      "renderGroup": 1,
+      "initData": "AAAAHGZ0eXBpc281AAA...",
+      "codec": "mp4a.40.5",
+      "samplerate": 48000,
+      "channelConfig": "2",
+      "bitrate": 67071
+    }
+  ]
+}
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="clearkey-protected-video">
+<section id="section-5.3">
+        <h3 id="name-clearkey-protected-video">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-clearkey-protected-video" class="section-name selfRef">ClearKey-protected video</a>
+        </h3>
+<p id="section-5.3-1">This example shows a catalog using ClearKey content protection following
+the ECCP model, suitable for testing and development.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-5.3-2">
+<pre>
+{
+  "version": 1,
+  "generatedAt": 1746104606044,
+  "contentProtections": [
+    {
+      "refID": "1",
+      "defaultKID": [
+        "01234567-89ab-cdef-0123-456789abcdef"
+      ],
+      "scheme": "cenc",
+      "drmSystem": {
+        "systemID": "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b",
+        "laURL": {
+          "url": "https://clearkey-server.example.com/clearkey",
+          "type": "EME-1.0"
+        },
+        "pssh": "AAAANHBzc2gBAAAAEHfv7MCyTQKs4..."
+      }
+    }
+  ],
+  "tracks": [
+    {
+      "name": "video",
+      "packaging": "cmaf",
+      "isLive": true,
+      "role": "video",
+      "renderGroup": 1,
+      "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+      "codec": "avc1.640028",
+      "framerate": 30,
+      "bitrate": 5000000,
+      "width": 1920,
+      "height": 1080,
+      "contentProtectionRefIDs": ["1"]
+    }
+  ]
+}
+</pre><a href="#section-5.3-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 </section>
 </div>
 <div id="conventions-and-definitions">
-<section id="section-5">
+<section id="section-6">
       <h2 id="name-conventions-and-definitions">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
       </h2>
-<p id="section-5-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+<p id="section-6-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
-appear in all capitals, as shown here.<a href="#section-5-1" class="pilcrow">¶</a></p>
+appear in all capitals, as shown here.<a href="#section-6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-security-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-6-1">TODO Security<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">TODO Security<a href="#section-7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-iana-considerations">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-7-1">This document has no IANA actions.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">This document has no IANA actions.<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-normative-references">
-<section id="section-8">
-      <h2 id="name-normative-references">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
 <dl class="references">
 <dt id="BASE64">[BASE64]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="CENC">[CENC]</dt>
+        <dd>
+<span class="refAuthor">Standardization, I. O. for.</span>, <span class="refTitle">"Information technology — MPEG systems technologies — Part 7: Common encryption in ISO base media file format files"</span>, <span class="seriesInfo">ISO/IEC 23001-7:2024</span>, <time datetime="2024-08" class="refDate">August 2024</time>. </dd>
+<dd class="break"></dd>
 <dt id="CMAF">[CMAF]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Standardization, I. O. for.</span>, <span class="refTitle">"Information technology — Multimedia application format (MPEG-A) — Part 19: Common media application format (CMAF) for segmented media"</span>, <time datetime="2021-10" class="refDate">October 2021</time>. </dd>
 <dd class="break"></dd>
 <dt id="MoQTransport">[MoQTransport]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Curley, L.</span>, <span class="refAuthor">Pugin, K.</span>, <span class="refAuthor">Nandakumar, S.</span>, <span class="refAuthor">Vasiliev, V.</span>, and <span class="refAuthor">I. Swett</span>, <span class="refTitle">"Media over QUIC Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-moq-transport-10</span>, <time datetime="2025-03-03" class="refDate">3 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-transport-10">https://datatracker.ietf.org/doc/html/draft-ietf-moq-transport-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="MSF">[MSF]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Law, W.</span>, <span class="refAuthor">Curley, L.</span>, <span class="refAuthor">Vasiliev, V.</span>, <span class="refAuthor">Nandakumar, S.</span>, and <span class="refAuthor">K. Pugin</span>, <span class="refTitle">"WARP Streaming Format"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-moq-warp-01</span>, <time datetime="2025-07-22" class="refDate">22 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01">https://datatracker.ietf.org/doc/html/draft-ietf-moq-warp-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+      <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="DASH">[DASH]</dt>
+        <dd>
+<span class="refAuthor">Standardization, I. O. for.</span>, <span class="refTitle">"Information technology — Dynamic adaptive streaming over HTTP (DASH) — Part 1: Media presentation description and segment formats."</span>, <span class="seriesInfo">ISO/IEC 23009-1:2022</span>, <time datetime="2022-08" class="refDate">August 2022</time>. </dd>
+<dd class="break"></dd>
+<dt id="DASHIF-ECCP">[DASHIF-ECCP]</dt>
+      <dd>
+<span class="refAuthor">Forum, D. I.</span>, <span class="refTitle">"DASH-IF Implementation Guidelines: Encryption and Content Protection (ECCP)"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://dashif.org/docs/DASH-IF-ECCP-v1.0.0.pdf">https://dashif.org/docs/DASH-IF-ECCP-v1.0.0.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
 </section>
 </div>
 <div id="acknowledgments">
