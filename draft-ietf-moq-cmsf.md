@@ -132,14 +132,13 @@ The payload of each Object is subject to the following requirements:
   initialization fragment.
 * MAY contain multiple successive CMAF Chunks.
 * MUST contain a single [ISOBMFF] track.
-* MUST contain media content encoded in decode order.
 
 ## Group Packaging
 
 Each MOQT Group
 
-* MUST begin with an Object containing a stream access point (SAP type 1 or 2).
-* MUST contain one or more contiguous Groups of Pictures (GOPs).
+* MUST begin with an Object containing a stream access point (SAP) type 1 or 2.
+* MUST contain one or more contiguous independently coded sequences of media samples.
 * The Group boundary MUST align with a CMAF Fragment boundary. CMAF Fragments and CMAF
   Chunks MUST not span Groups.
 
