@@ -4,8 +4,8 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                           1 December 2025
-Expires: 4 June 2026
+Intended status: Informational                             14 April 2026
+Expires: 16 October 2026
 
 
      CMSF- a CMAF compliant implementation of MOQT Streaming Format
@@ -49,11 +49,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 June 2026.
+   This Internet-Draft will expire on 16 October 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -80,13 +80,23 @@ Table of Contents
      3.6.  Event Timelines
        3.6.1.  SAP Type timeline
        3.6.2.  SAP-type timeline track example
-   4.  Catalog Examples
-     4.1.  Simulcast video tracks - 3 alternate video qualities along
+   4.  Content Protection
+     4.1.  Content Protection catalog fields
+       4.1.1.  Content Protections
+       4.1.2.  Content Protection Reference IDs
+     4.2.  Initialization data for protected tracks
+     4.3.  ClearKey content protection
+   5.  Catalog Examples
+     5.1.  Simulcast video tracks - 3 alternate video qualities along
            with audio
-   5.  Conventions and Definitions
-   6.  Security Considerations
-   7.  IANA Considerations
-   8.  Normative References
+     5.2.  DRM-protected video with audio
+     5.3.  ClearKey-protected video
+   6.  Conventions and Definitions
+   7.  Security Considerations
+   8.  IANA Considerations
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
    Acknowledgments
    Author's Address
 
@@ -287,12 +297,226 @@ Table of Contents
        }
    ]
 
-4.  Catalog Examples
+4.  Content Protection
+
+   CMSF supports content protection using Common Encryption [CENC] for
+   CMAF-packaged media.  This enables interoperability with existing DRM
+   ecosystems by reusing the signaling model established by DASH [DASH]
+   and the DASH-IF Encryption and Content Protection (ECCP) guidelines
+   [DASHIF-ECCP].
+
+   Content protection in CMSF differs from the encryption scheme defined
+   in [MSF] Section 3.7.  While MSF defines an end-to-end encryption
+   mechanism using MoQ Secure Objects for LOC-packaged content, CMSF
+   uses ISO Common Encryption [CENC] applied at the CMAF media layer.
+   In CMSF, the media samples within CMAF chunks are encrypted as
+   specified by [CENC], and the DRM signaling is carried in the catalog
+   rather than in per-object headers.
+
+   A key advantage of CENC-based content protection is that decryption
+   can be delegated to a Content Decryption Module (CDM) operating at a
+   deeper system level, potentially in hardware or a trusted execution
+   environment.  This enables robust content protection through
+   commercial DRM systems such as Widevine, PlayReady, and FairPlay
+   Streaming, where the decryption keys and decrypted media are handled
+   within a secure pipeline that is not accessible to the application
+   layer.  This hardware-level protection is a requirement for high-
+   value content distribution and is not achievable with application-
+   layer encryption schemes alone.
+
+4.1.  Content Protection catalog fields
+
+   Content protection information is signaled in the catalog at two
+   levels: a root-level contentProtections array containing DRM system
+   descriptions, and track-level references to those descriptions.
+
+4.1.1.  Content Protections
+
+   Location: R Required: Optional JSON Type: Array
+
+   A JSON array of Content Protection objects at the root level of the
+   catalog.  Each object describes a single DRM system configuration.
+   Content protection information MUST NOT be duplicated at the track
+   level; all tracks reference the root-level entries.
+
+   Each Content Protection object contains the following fields:
+
+4.1.1.1.  Reference ID
+
+   Location: CP Required: Required JSON Type: String
+
+   A unique identifier for this content protection entry.  Track entries
+   reference this value via the contentProtectionRefIDs field.
+
+4.1.1.2.  Default KIDs
+
+   Location: CP Required: Required JSON Type: Array of Strings
+
+   An array of default Key IDs (KIDs) expressed as UUID strings in the
+   format "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".  These correspond to
+   the default_KID values defined in [CENC] Section 5.  When multiple
+   KIDs are present, each identifies a key used to encrypt a different
+   set of samples (e.g., separate keys for different track types).
+
+4.1.1.3.  Scheme
+
+   Location: CP Required: Required JSON Type: String
+
+   The Common Encryption protection scheme as defined in [CENC].
+   Allowed values are:
+
+    +======+=======+=================================================+
+    | Name | Value | Description                                     |
+    +======+=======+=================================================+
+    | CENC | cenc  | AES-CTR full sample and sub-sample encryption   |
+    +------+-------+-------------------------------------------------+
+    | CBCS | cbcs  | AES-CBC pattern-based encryption with subsample |
+    +------+-------+-------------------------------------------------+
+
+                                 Table 3
+
+   The RECOMMENDED scheme for CMSF is "cbcs" as it provides better
+   compatibility with hardware decoders and aligns with DASH-IF ECCP
+   recommendations [DASHIF-ECCP].
+
+4.1.1.4.  DRM System
+
+   Location: CP Required: Required JSON Type: Object
+
+   An object describing the DRM system associated with this content
+   protection entry.  It contains the following fields:
+
+4.1.1.4.1.  System ID
+
+   Location: DS Required: Required JSON Type: String
+
+   The DRM System ID expressed as a UUID string.  Well-known system IDs
+   include:
+
+           +============+======================================+
+           | DRM System | System ID                            |
+           +============+======================================+
+           | Widevine   | edef8ba9-79d6-4ace-a3c8-27dcd51d21ed |
+           +------------+--------------------------------------+
+           | PlayReady  | 9a04f079-9840-4286-ab92-e65be0885f95 |
+           +------------+--------------------------------------+
+           | FairPlay   | 94ce86fb-07ff-4f43-adb8-93d2fa968ca2 |
+           +------------+--------------------------------------+
+           | ClearKey   | 1077efec-c0b2-4d02-ace3-3c1e52e2fb4b |
+           +------------+--------------------------------------+
+
+                                  Table 4
+
+   The ClearKey system ID follows the W3C EME specification and
+   corresponds to the DASH-IF ECCP "Explicit Clear Key Content
+   Protection" mechanism [DASHIF-ECCP].
+
+4.1.1.4.2.  License URL
+
+   Location: DS Required: Optional JSON Type: Object
+
+   An object containing the URL of the license acquisition service.  The
+   object has the following fields:
+
+   *  url (String, Required): The URL of the license server.
+
+   *  type (String, Optional): The license protocol type (e.g., "EME-
+      1.0").
+
+4.1.1.4.3.  Certificate URL
+
+   Location: DS Required: Optional JSON Type: Object
+
+   An object containing the URL of the DRM certificate service.  This
+   field is REQUIRED for DRM systems that require a server certificate
+   (e.g., FairPlay Streaming).  The object has the following fields:
+
+   *  url (String, Required): The URL of the certificate server.
+
+   *  type (String, Optional): The MIME type of the certificate resource
+      (e.g., "application/pkcs7-mime", "application/x-x509-ca-cert").
+      This corresponds to the certType attribute defined in
+      [DASHIF-ECCP].
+
+4.1.1.4.4.  Authorization URL
+
+   Location: DS Required: Optional JSON Type: Object
+
+   An object containing the URL of an authorization service.  The object
+   has the following fields:
+
+   *  url (String, Required): The URL of the authorization server.
+
+   *  type (String, Optional): The authorization protocol type.
+
+4.1.1.4.5.  PSSH
+
+   Location: DS Required: Optional JSON Type: String
+
+   A Base64-encoded [BASE64] Protection System Specific Header (PSSH)
+   box as defined in [CENC] Section 8.1.  The PSSH box contains DRM
+   system-specific initialization data needed by the client to acquire a
+   license.  This field SHOULD be present for DRM systems that require
+   PSSH data (e.g., Widevine, PlayReady).
+
+4.1.1.4.6.  Robustness
+
+   Location: DS Required: Optional JSON Type: String
+
+   A string indicating the minimum robustness level required by the DRM
+   system.  The interpretation of this value is DRM system-specific.
+
+4.1.2.  Content Protection Reference IDs
+
+   Location: T Required: Optional JSON Type: Array of Strings
+
+   An array of Reference ID strings (see Section 4.1.1.1) identifying
+   which content protection entries from the root-level
+   contentProtections array apply to this track.  When this field is
+   present, the track content is encrypted using Common Encryption
+   [CENC] and the subscriber MUST acquire appropriate licenses before
+   decryption.
+
+   When this field is absent, the track content is not protected by
+   Common Encryption.
+
+4.2.  Initialization data for protected tracks
+
+   For protected CMAF tracks, the initialization data (carried in the
+   catalog initData field as defined in Section 3.1) MUST include the
+   Protection Scheme Information Box ('sinf') containing the Scheme Type
+   Box ('schm') and Scheme Information Box ('schi') with the Track
+   Encryption Box ('tenc') as specified in [CENC] Section 6.  This
+   enables the subscriber to determine the encryption parameters
+   (default_isProtected, default_Per_Sample_IV_Size, default_KID) from
+   the initialization segment.
+
+4.3.  ClearKey content protection
+
+   For testing and development scenarios, CMSF supports ClearKey content
+   protection using the W3C EME ClearKey mechanism.  ClearKey uses the
+   Common System ID "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" and follows
+   the DASH-IF ECCP Explicit Clear Key Content Protection (ECCP) model
+   [DASHIF-ECCP].
+
+   When using ClearKey:
+
+   *  The systemID MUST be set to "1077efec-
+      c0b2-4d02-ace3-3c1e52e2fb4b".
+
+   *  The laURL field SHOULD contain the URL of a ClearKey license
+      server that implements the EME ClearKey protocol.
+
+   *  The optional pssh field SHOULD contain a Base64-encoded PSSH box
+      with version 1, the Common System ID, and the KID(s) in the KID
+      list.
+
+5.  Catalog Examples
 
    The following section provides non-normative JSON examples of various
    catalogs compliant with this draft.
 
-4.1.  Simulcast video tracks - 3 alternate video qualities along with
+5.1.  Simulcast video tracks - 3 alternate video qualities along with
       audio
 
    This example shows catalog for a media producer capable of sending 3
@@ -360,7 +584,137 @@ Table of Contents
       ]
    }
 
-5.  Conventions and Definitions
+5.2.  DRM-protected video with audio
+
+   This example shows a catalog for a single DRM-protected video track
+   and an unprotected audio track.  The video track is encrypted using
+   CBCS and references three content protection entries: Widevine,
+   PlayReady, and FairPlay.
+
+   {
+     "version": 1,
+     "generatedAt": 1746104606044,
+     "contentProtections": [
+       {
+         "refID": "1",
+         "defaultKID": [
+           "01234567-89ab-cdef-0123-456789abcdef"
+         ],
+         "scheme": "cbcs",
+         "drmSystem": {
+           "systemID": "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+           "laURL": {
+             "url": "https://widevine-license.example.com/proxy"
+           },
+           "pssh": "AAAAP3Bzc2gAAAAA7e+LqXnWSs6jy..."
+         }
+       },
+       {
+         "refID": "2",
+         "defaultKID": [
+           "01234567-89ab-cdef-0123-456789abcdef"
+         ],
+         "scheme": "cbcs",
+         "drmSystem": {
+           "systemID": "9a04f079-9840-4286-ab92-e65be0885f95",
+           "laURL": {
+             "url": "https://playready-license.example.com/auth"
+           },
+           "pssh": "AAACvnBzc2gAAAAAmgTweZhAQoar..."
+         }
+       },
+       {
+         "refID": "3",
+         "defaultKID": [
+           "01234567-89ab-cdef-0123-456789abcdef"
+         ],
+         "scheme": "cbcs",
+         "drmSystem": {
+           "systemID": "94ce86fb-07ff-4f43-adb8-93d2fa968ca2",
+           "laURL": {
+             "url": "https://fps-license.example.com/api/licenses"
+           },
+           "certURL": {
+             "url": "https://fps-license.example.com/cert"
+           }
+         }
+       }
+     ],
+     "tracks": [
+       {
+         "name": "video_protected",
+         "packaging": "cmaf",
+         "isLive": true,
+         "role": "video",
+         "renderGroup": 1,
+         "altGroup": 1,
+         "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+         "codec": "avc3.4D401F",
+         "framerate": 25,
+         "bitrate": 581905,
+         "width": 1280,
+         "height": 720,
+         "contentProtectionRefIDs": ["1", "2", "3"]
+       },
+       {
+         "name": "audio",
+         "packaging": "cmaf",
+         "isLive": true,
+         "role": "audio",
+         "renderGroup": 1,
+         "initData": "AAAAHGZ0eXBpc281AAA...",
+         "codec": "mp4a.40.5",
+         "samplerate": 48000,
+         "channelConfig": "2",
+         "bitrate": 67071
+       }
+     ]
+   }
+
+5.3.  ClearKey-protected video
+
+   This example shows a catalog using ClearKey content protection
+   following the ECCP model, suitable for testing and development.
+
+   {
+     "version": 1,
+     "generatedAt": 1746104606044,
+     "contentProtections": [
+       {
+         "refID": "1",
+         "defaultKID": [
+           "01234567-89ab-cdef-0123-456789abcdef"
+         ],
+         "scheme": "cenc",
+         "drmSystem": {
+           "systemID": "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b",
+           "laURL": {
+             "url": "https://clearkey-server.example.com/clearkey",
+             "type": "EME-1.0"
+           },
+           "pssh": "AAAANHBzc2gBAAAAEHfv7MCyTQKs4..."
+         }
+       }
+     ],
+     "tracks": [
+       {
+         "name": "video",
+         "packaging": "cmaf",
+         "isLive": true,
+         "role": "video",
+         "renderGroup": 1,
+         "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+         "codec": "avc1.640028",
+         "framerate": 30,
+         "bitrate": 5000000,
+         "width": 1920,
+         "height": 1080,
+         "contentProtectionRefIDs": ["1"]
+       }
+     ]
+   }
+
+6.  Conventions and Definitions
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
@@ -368,19 +722,26 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-6.  Security Considerations
+7.  Security Considerations
 
    TODO Security
 
-7.  IANA Considerations
+8.  IANA Considerations
 
    This document has no IANA actions.
 
-8.  Normative References
+9.  References
+
+9.1.  Normative References
 
    [BASE64]   Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/rfc/rfc4648>.
+
+   [CENC]     Standardization, I. O. for., "Information technology —
+              MPEG systems technologies — Part 7: Common encryption in
+              ISO base media file format files", ISO/IEC 23001-7:2024,
+              August 2024.
 
    [CMAF]     Standardization, I. O. for., "Information technology —
               Multimedia application format (MPEG-A) — Part 19: Common
@@ -408,6 +769,18 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+9.2.  Informative References
+
+   [DASH]     Standardization, I. O. for., "Information technology —
+              Dynamic adaptive streaming over HTTP (DASH) — Part 1:
+              Media presentation description and segment formats.", ISO/
+              IEC 23009-1:2022, August 2022.
+
+   [DASHIF-ECCP]
+              Forum, D. I., "DASH-IF Implementation Guidelines:
+              Encryption and Content Protection (ECCP)", 2023,
+              <https://dashif.org/docs/DASH-IF-ECCP-v1.0.0.pdf>.
 
 Acknowledgments
 
