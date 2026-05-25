@@ -4,8 +4,8 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                             14 April 2026
-Expires: 16 October 2026
+Intended status: Informational                               25 May 2026
+Expires: 26 November 2026
 
 
      CMSF- a CMAF compliant implementation of MOQT Streaming Format
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 October 2026.
+   This Internet-Draft will expire on 26 November 2026.
 
 Copyright Notice
 
@@ -168,16 +168,15 @@ Table of Contents
 
    *  MUST contain a single [ISOBMFF] track.
 
-   *  MUST contain media content encoded in decode order.
-
 3.4.  Group Packaging
 
    Each MOQT Group
 
-   *  MUST begin with an Object containing a stream access point (SAP
-      type 1 or 2).
+   *  MUST begin with an Object containing a stream access point (SAP)
+      type 1 or 2.
 
-   *  MUST contain one or more contiguous Groups of Pictures (GOPs).
+   *  MUST contain one or more contiguous independently coded sequences
+      of media samples.
 
    *  The Group boundary MUST align with a CMAF Fragment boundary.  CMAF
       Fragments and CMAF Chunks MUST not span Groups.
