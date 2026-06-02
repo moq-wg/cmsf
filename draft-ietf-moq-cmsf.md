@@ -485,22 +485,22 @@ definition video qualities, along with an audio track.
     {
       "id": "init-hd",
       "type": "inline",
-      "data": "AAAAIGZ0eXBpc281AAA...AAAAAAAAAAAAA"
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
     },
     {
       "id": "init-md",
       "type": "inline",
-      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
     },
     {
       "id": "init-sd",
       "type": "inline",
-      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
     },
     {
       "id": "init-audio",
       "type": "inline",
-      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
     }
   ]
 }
@@ -599,12 +599,12 @@ FairPlay.
     {
       "id": "1",
       "type": "inline",
-      "data": "AAAAGGZ0eXBjbWZjAAAA..."
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
     },
     {
       "id": "2",
       "type": "inline",
-      "data": "AAAAHGZ0eXBpc281AAA..."
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
     }
   ]
 }
@@ -657,7 +657,7 @@ the ECCP model, suitable for testing and development.
     {
       "id": "init-video",
       "type": "inline",
-      "data": "AAAAGGZ0eXBjbWZjAAAA..."
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
     }
   ]
 }
