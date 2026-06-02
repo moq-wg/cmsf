@@ -1287,7 +1287,7 @@ implementations of this extension unless explicitly noted otherwise in this docu
       <h2 id="name-cmaf-packaging">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-cmaf-packaging" class="section-name selfRef">CMAF Packaging</a>
       </h2>
-<div id="initialization-headers">
+<div id="initheaders">
 <section id="section-3.1">
         <h3 id="name-initialization-headers">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-initialization-headers" class="section-name selfRef">Initialization headers</a>
@@ -1295,9 +1295,10 @@ implementations of this extension unless explicitly noted otherwise in this docu
 <p id="section-3.1-1">A CMAF header is a sequence of CMAF constrained ISO BMFF boxes that do not reference any
 media samples, but are associated with a CMAF track and are necessary for initializing
 the decoding of the subsequent CMAF fragments.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">The header for a given MOQT Track <span class="bcp14">MUST</span> be packaged by encoding the header using <span>[<a href="#BASE64" class="cite xref">BASE64</a>]</span>
-and then inserting that payload as the value of the Initialization data "initData" field
-in the catalog entry for that Track.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The header for a given MOQT Track <span class="bcp14">MUST</span> be added to the catalog by generating an initDataList
+entry with a "type" of "inline", a "data" value of the header encoded using <span>[<a href="#BASE64" class="cite xref">BASE64</a>]</span> and an
+"id" which is unique across the initDataList items. That "id" value is then inserted as the
+value of an "initRef" property in all tracks which use that header for initialization.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="switching-sets-and-tracks">
@@ -1780,7 +1781,7 @@ Encryption.<a href="#section-4.1.2-3" class="pilcrow">¶</a></p>
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-initialization-data-for-pro" class="section-name selfRef">Initialization data for protected tracks</a>
         </h3>
 <p id="section-4.2-1">For protected CMAF tracks, the initialization data (carried in the catalog
-<code>initData</code> field as defined in Section 3.1) <span class="bcp14">MUST</span> include the Protection
+<code>initDataList</code> array (as defined in <a href="#initheaders" class="auto internal xref">Section 3.1</a>) <span class="bcp14">MUST</span> include the Protection
 Scheme Information Box ('sinf') containing the Scheme Type Box ('schm')
 and Scheme Information Box ('schi') with the Track Encryption Box ('tenc')
 as specified in <span>[<a href="#CENC" class="cite xref">CENC</a>]</span> Section 6. This enables the subscriber to determine
