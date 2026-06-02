@@ -4,8 +4,8 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                               25 May 2026
-Expires: 26 November 2026
+Intended status: Informational                               2 June 2026
+Expires: 4 December 2026
 
 
      CMSF- a CMAF compliant implementation of MOQT Streaming Format
@@ -49,7 +49,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 November 2026.
+   This Internet-Draft will expire on 4 December 2026.
 
 Copyright Notice
 
@@ -106,7 +106,7 @@ Table of Contents
    designed to deliver CMAF [CMAF] and LOC [LOC] compliant media content
    over MOQ Transport (MOQT) [MoQTransport].  CMSF extends MSF and
    retains all the scope, capabilities and features of MSF including the
-   catalog format, timeline, ABR switching and LOC support.  MSF is
+   catalog format, timeline, ABR switching and LOC support.  CMSF is
    targeted at real-time and interactive levels of live latency, as well
    as VOD content.
 
@@ -127,10 +127,12 @@ Table of Contents
    track and are necessary for initializing the decoding of the
    subsequent CMAF fragments.
 
-   The header for a given MOQT Track MUST be packaged by encoding the
-   header using [BASE64] and then inserting that payload as the value of
-   the Initialization data "initData" field in the catalog entry for
-   that Track.
+   The header for a given MOQT Track MUST be added to the catalog by
+   generating an initDataList entry with a "type" of "inline", a "data"
+   value of the header encoded using [BASE64] and an "id" which is
+   unique across the initDataList items.  That "id" value is then
+   inserted as the value of an "initRef" property in all tracks which
+   use that header for initialization.
 
 3.2.  Switching sets and tracks
 
@@ -305,7 +307,7 @@ Table of Contents
    [DASHIF-ECCP].
 
    Content protection in CMSF differs from the encryption scheme defined
-   in [MSF] Section 3.7.  While MSF defines an end-to-end encryption
+   in [MSF] Section 4.3.  While MSF defines an end-to-end encryption
    mechanism using MoQ Secure Objects for LOC-packaged content, CMSF
    uses ISO Common Encryption [CENC] applied at the CMAF media layer.
    In CMSF, the media samples within CMAF chunks are encrypted as
@@ -482,9 +484,9 @@ Table of Contents
 4.2.  Initialization data for protected tracks
 
    For protected CMAF tracks, the initialization data (carried in the
-   catalog initData field as defined in Section 3.1) MUST include the
-   Protection Scheme Information Box ('sinf') containing the Scheme Type
-   Box ('schm') and Scheme Information Box ('schi') with the Track
+   catalog initDataList array (as defined in Section 3.1) MUST include
+   the Protection Scheme Information Box ('sinf') containing the Scheme
+   Type Box ('schm') and Scheme Information Box ('schi') with the Track
    Encryption Box ('tenc') as specified in [CENC] Section 6.  This
    enables the subscriber to determine the encryption parameters
    (default_isProtected, default_Per_Sample_IV_Size, default_KID) from
@@ -523,7 +525,7 @@ Table of Contents
    medium definition video qualities, along with an audio track.
 
    {
-     "version": 1,
+     "version": "1",
      "generatedAt": 1746104606044,
      "tracks":[
        {
@@ -531,7 +533,8 @@ Table of Contents
          "renderGroup": 1,
          "packaging": "cmaf",
          "isLive": true,
-         "initData": "AAAAIGZ0eXBpc281AAA...AAAAAAAAAAAAA",
+         "targetLatency": 2000,
+         "initRef": "init-hd",
          "role": "video",
          "codec":"avc1.640028",
          "width":1920,
@@ -545,7 +548,8 @@ Table of Contents
          "renderGroup": 1,
          "packaging": "cmaf",
          "isLive": true,
-         "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+         "targetLatency": 2000,
+         "initRef": "init-md",
          "role": "video",
          "codec":"avc1.64001e",
          "width":720,
@@ -559,7 +563,8 @@ Table of Contents
          "renderGroup": 1,
          "packaging": "cmaf",
          "isLive": true,
-         "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+         "targetLatency": 2000,
+         "initRef": "init-sd",
          "role": "video",
          "codec":"avc1.64000d",
          "width":192,
@@ -573,14 +578,37 @@ Table of Contents
          "renderGroup": 1,
          "packaging": "cmaf",
          "isLive": true,
-         "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+         "targetLatency": 2000,
+         "initRef": "init-audio",
          "role": "audio",
          "codec":"mp4a.40.5",
          "samplerate":48000,
          "channelConfig":"2",
          "bitrate":67071
        }
-      ]
+      ],
+     "initDataList": [
+       {
+         "id": "init-hd",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
+       },
+       {
+         "id": "init-md",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
+       },
+       {
+         "id": "init-sd",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
+       },
+       {
+         "id": "init-audio",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
+       }
+     ]
    }
 
 5.2.  DRM-protected video with audio
@@ -591,7 +619,7 @@ Table of Contents
    PlayReady, and FairPlay.
 
    {
-     "version": 1,
+     "version": "1",
      "generatedAt": 1746104606044,
      "contentProtections": [
        {
@@ -644,10 +672,11 @@ Table of Contents
          "name": "video_protected",
          "packaging": "cmaf",
          "isLive": true,
+         "buffers": {"target":1500},
          "role": "video",
          "renderGroup": 1,
          "altGroup": 1,
-         "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+         "initRef": "1",
          "codec": "avc3.4D401F",
          "framerate": 25,
          "bitrate": 581905,
@@ -659,13 +688,26 @@ Table of Contents
          "name": "audio",
          "packaging": "cmaf",
          "isLive": true,
+         "buffers": {"target":1500},
          "role": "audio",
          "renderGroup": 1,
-         "initData": "AAAAHGZ0eXBpc281AAA...",
+         "initRef": "2",
          "codec": "mp4a.40.5",
          "samplerate": 48000,
          "channelConfig": "2",
          "bitrate": 67071
+       }
+     ],
+     "initDataList": [
+       {
+         "id": "1",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
+       },
+       {
+         "id": "2",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
        }
      ]
    }
@@ -676,7 +718,7 @@ Table of Contents
    following the ECCP model, suitable for testing and development.
 
    {
-     "version": 1,
+     "version": "1",
      "generatedAt": 1746104606044,
      "contentProtections": [
        {
@@ -700,15 +742,23 @@ Table of Contents
          "name": "video",
          "packaging": "cmaf",
          "isLive": true,
+         "buffers": {"target":1500},
          "role": "video",
          "renderGroup": 1,
-         "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+         "initRef": "init-video",
          "codec": "avc1.640028",
          "framerate": 30,
          "bitrate": 5000000,
          "width": 1920,
          "height": 1080,
          "contentProtectionRefIDs": ["1"]
+       }
+     ],
+     "initDataList": [
+       {
+         "id": "init-video",
+         "type": "inline",
+         "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
        }
      ]
    }
@@ -748,17 +798,16 @@ Table of Contents
               October 2021.
 
    [MoQTransport]
-              Curley, L., Pugin, K., Nandakumar, S., Vasiliev, V., and
-              I. Swett, "Media over QUIC Transport", Work in Progress,
-              Internet-Draft, draft-ietf-moq-transport-10, 3 March 2025,
+              Nandakumar, S., Vasiliev, V., Swett, I., and A. Frindell,
+              "Media over QUIC Transport", Work in Progress, Internet-
+              Draft, draft-ietf-moq-transport-18, 12 May 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-moq-
-              transport-10>.
+              transport-18>.
 
-   [MSF]      Law, W., Curley, L., Vasiliev, V., Nandakumar, S., and K.
-              Pugin, "WARP Streaming Format", Work in Progress,
-              Internet-Draft, draft-ietf-moq-warp-01, 22 July 2025,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-moq-
-              warp-01>.
+   [MSF]      Law, W. and S. Nandakumar, "MOQT Streaming Format", Work
+              in Progress, Internet-Draft, draft-ietf-moq-msf-01, 2 June
+              2026, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              moq-msf-01>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
