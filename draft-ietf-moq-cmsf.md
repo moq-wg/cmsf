@@ -31,8 +31,8 @@ author:
     email: wilaw@akamai.com
 
 normative:
-  MoQTransport: I-D.draft-ietf-moq-transport-10
-  MSF:  I-D.draft-ietf-moq-warp
+  MoQTransport: I-D.draft-ietf-moq-transport-18
+  MSF:  I-D.draft-ietf-moq-msf-01
   CMAF:
     author:
       - name: International Organization for Standardization
@@ -85,7 +85,7 @@ It specifies the syntax and semantics for adding CMAF-packaged media [CMAF] to M
 CMAF compliant MOQT Streaming Format (CMSF) is a media format designed to deliver CMAF [CMAF] and
 LOC [LOC] compliant media content over MOQ Transport (MOQT) [MoQTransport]. CMSF extends
 MSF and retains all the scope, capabilities and features of MSF including the catalog
-format, timeline, ABR switching and LOC support. MSF is targeted at real-time and
+format, timeline, ABR switching and LOC support. CMSF is targeted at real-time and
 interactive levels of live latency, as well as VOD content.
 
 This document describes version 1 of the CMSF streaming format.
@@ -238,7 +238,7 @@ by reusing the signaling model established by DASH [DASH] and the DASH-IF
 Encryption and Content Protection (ECCP) guidelines [DASHIF-ECCP].
 
 Content protection in CMSF differs from the encryption scheme defined in
-[MSF] Section 3.7. While MSF defines an end-to-end encryption mechanism
+[MSF] Section 4.3. While MSF defines an end-to-end encryption mechanism
 using MoQ Secure Objects for LOC-packaged content, CMSF uses ISO Common
 Encryption [CENC] applied at the CMAF media layer. In CMSF, the media
 samples within CMAF chunks are encrypted as specified by [CENC], and the
@@ -419,7 +419,7 @@ definition video qualities, along with an audio track.
 
 ~~~json
 {
-  "version": 1,
+  "version": "1",
   "generatedAt": 1746104606044,
   "tracks":[
     {
@@ -427,7 +427,8 @@ definition video qualities, along with an audio track.
       "renderGroup": 1,
       "packaging": "cmaf",
       "isLive": true,
-      "initData": "AAAAIGZ0eXBpc281AAA...AAAAAAAAAAAAA",
+      "targetLatency": 2000,
+      "initRef": "init-hd",
       "role": "video",
       "codec":"avc1.640028",
       "width":1920,
@@ -441,7 +442,8 @@ definition video qualities, along with an audio track.
       "renderGroup": 1,
       "packaging": "cmaf",
       "isLive": true,
-      "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+      "targetLatency": 2000,
+      "initRef": "init-md",
       "role": "video",
       "codec":"avc1.64001e",
       "width":720,
@@ -455,7 +457,8 @@ definition video qualities, along with an audio track.
       "renderGroup": 1,
       "packaging": "cmaf",
       "isLive": true,
-      "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+      "targetLatency": 2000,
+      "initRef": "init-sd",
       "role": "video",
       "codec":"avc1.64000d",
       "width":192,
@@ -469,14 +472,37 @@ definition video qualities, along with an audio track.
       "renderGroup": 1,
       "packaging": "cmaf",
       "isLive": true,
-      "initData": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA",
+      "targetLatency": 2000,
+      "initRef": "init-audio",
       "role": "audio",
       "codec":"mp4a.40.5",
       "samplerate":48000,
       "channelConfig":"2",
       "bitrate":67071
     }
-   ]
+   ],
+  "initDataList": [
+    {
+      "id": "init-hd",
+      "type": "inline",
+      "data": "AAAAIGZ0eXBpc281AAA...AAAAAAAAAAAAA"
+    },
+    {
+      "id": "init-md",
+      "type": "inline",
+      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+    },
+    {
+      "id": "init-sd",
+      "type": "inline",
+      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+    },
+    {
+      "id": "init-audio",
+      "type": "inline",
+      "data": "AAAAHGZ0eXBpc281AAA...AAAAAAAAAAAAAA"
+    }
+  ]
 }
 ~~~
 
@@ -490,7 +516,7 @@ FairPlay.
 
 ~~~json
 {
-  "version": 1,
+  "version": "1",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
@@ -543,10 +569,11 @@ FairPlay.
       "name": "video_protected",
       "packaging": "cmaf",
       "isLive": true,
+      "buffers": {"target":1500},
       "role": "video",
       "renderGroup": 1,
       "altGroup": 1,
-      "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+      "initRef": "1",
       "codec": "avc3.4D401F",
       "framerate": 25,
       "bitrate": 581905,
@@ -558,13 +585,26 @@ FairPlay.
       "name": "audio",
       "packaging": "cmaf",
       "isLive": true,
+      "buffers": {"target":1500},
       "role": "audio",
       "renderGroup": 1,
-      "initData": "AAAAHGZ0eXBpc281AAA...",
+      "initRef": "2",
       "codec": "mp4a.40.5",
       "samplerate": 48000,
       "channelConfig": "2",
       "bitrate": 67071
+    }
+  ],
+  "initDataList": [
+    {
+      "id": "1",
+      "type": "inline",
+      "data": "AAAAGGZ0eXBjbWZjAAAA..."
+    },
+    {
+      "id": "2",
+      "type": "inline",
+      "data": "AAAAHGZ0eXBpc281AAA..."
     }
   ]
 }
@@ -577,7 +617,7 @@ the ECCP model, suitable for testing and development.
 
 ~~~json
 {
-  "version": 1,
+  "version": "1",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
@@ -601,15 +641,23 @@ the ECCP model, suitable for testing and development.
       "name": "video",
       "packaging": "cmaf",
       "isLive": true,
+      "buffers": {"target":1500},
       "role": "video",
       "renderGroup": 1,
-      "initData": "AAAAGGZ0eXBjbWZjAAAA...",
+      "initRef": "init-video",
       "codec": "avc1.640028",
       "framerate": 30,
       "bitrate": 5000000,
       "width": 1920,
       "height": 1080,
       "contentProtectionRefIDs": ["1"]
+    }
+  ],
+"initDataList": [
+    {
+      "id": "init-video",
+      "type": "inline",
+      "data": "AAAAGGZ0eXBjbWZjAAAA..."
     }
   ]
 }
