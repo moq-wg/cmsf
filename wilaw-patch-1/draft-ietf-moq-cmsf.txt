@@ -752,7 +752,7 @@ Table of Contents
          "contentProtectionRefIDs": ["1"]
        }
      ],
-   "initDataList": [
+     "initDataList": [
        {
          "id": "init-video",
          "type": "inline",
