@@ -96,14 +96,15 @@ implementations of this extension unless explicitly noted otherwise in this docu
 
 # CMAF Packaging
 
-## Initialization headers
+## Initialization headers {#initheaders}
 A CMAF header is a sequence of CMAF constrained ISO BMFF boxes that do not reference any
 media samples, but are associated with a CMAF track and are necessary for initializing
 the decoding of the subsequent CMAF fragments.
 
-The header for a given MOQT Track MUST be packaged by encoding the header using [BASE64]
-and then inserting that payload as the value of the Initialization data "initData" field
-in the catalog entry for that Track.
+The header for a given MOQT Track MUST be added to the catalog by generating an initDataList
+entry with a "type" of "inline", a "data" value of the header encoded using [BASE64] and an
+"id" which is unique across the initDataList items. That "id" value is then inserted as the
+value of an "initRef" property in all tracks which use that header for initialization.
 
 ## Switching sets and tracks
 This specification defines a direct mapping between CMAF Tracks ( [CMAF] Sect 3.2.1) and
@@ -382,7 +383,7 @@ Encryption.
 ## Initialization data for protected tracks
 
 For protected CMAF tracks, the initialization data (carried in the catalog
-`initData` field as defined in Section 3.1) MUST include the Protection
+`initDataList` array (as defined in {{initheaders}}) MUST include the Protection
 Scheme Information Box ('sinf') containing the Scheme Type Box ('schm')
 and Scheme Information Box ('schi') with the Track Encryption Box ('tenc')
 as specified in [CENC] Section 6. This enables the subscriber to determine
