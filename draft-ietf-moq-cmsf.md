@@ -653,7 +653,7 @@ the ECCP model, suitable for testing and development.
       "contentProtectionRefIDs": ["1"]
     }
   ],
-"initDataList": [
+  "initDataList": [
     {
       "id": "init-video",
       "type": "inline",
