@@ -33,6 +33,7 @@ author:
 normative:
   MoQTransport: I-D.draft-ietf-moq-transport-18
   MSF:  I-D.draft-ietf-moq-msf-01
+  LOC: I-D.draft-ietf-moq-loc-02
   CMAF:
     author:
       - name: International Organization for Standardization
@@ -74,16 +75,16 @@ informative:
 
 --- abstract
 
-This document updates [MSF] by defining a new optional feature for the streaming format.
-It specifies the syntax and semantics for adding CMAF-packaged media [CMAF] to MSF.
+This document updates MOQT Streaming Format by defining optional syntax and semantics
+for carrying CMAF-packaged media.
 
 
 --- middle
 
 # Introduction
 
-CMAF compliant MOQT Streaming Format (CMSF) is a media format designed to deliver CMAF [CMAF] and
-LOC [LOC] compliant media content over MOQ Transport (MOQT) [MoQTransport]. CMSF extends
+CMAF compliant MOQT Streaming Format (CMSF) is a media format designed to deliver CMAF [CMAF]
+and LOC [LOC] compliant media content over MOQ Transport (MOQT) [MoQTransport]. CMSF extends
 MSF and retains all the scope, capabilities and features of MSF including the catalog
 format, timeline, ABR switching and LOC support. CMSF is targeted at real-time and
 interactive levels of live latency, as well as VOD content.
@@ -132,7 +133,7 @@ The payload of each Object is subject to the following requirements:
   (mfhd) and Track Box (trak) with a Track ID (track_ID) matching a Track Box in the
   initialization fragment.
 * MAY contain multiple successive CMAF Chunks.
-* MUST contain a single [ISOBMFF] track.
+* MUST contain a single track.
 
 ## Group Packaging
 
@@ -141,7 +142,7 @@ Each MOQT Group
 * MUST begin with an Object containing a stream access point (SAP) type 1 or 2.
 * MUST contain one or more contiguous independently coded sequences of media samples.
 * The Group boundary MUST align with a CMAF Fragment boundary. CMAF Fragments and CMAF
-  Chunks MUST not span Groups.
+  Chunks MUST NOT span Groups.
 
 ## Catalog description
 
