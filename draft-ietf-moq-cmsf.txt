@@ -4,8 +4,8 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                               2 June 2026
-Expires: 4 December 2026
+Intended status: Informational                               3 June 2026
+Expires: 5 December 2026
 
 
      CMSF- a CMAF compliant implementation of MOQT Streaming Format
@@ -13,9 +13,8 @@ Expires: 4 December 2026
 
 Abstract
 
-   This document updates [MSF] by defining a new optional feature for
-   the streaming format.  It specifies the syntax and semantics for
-   adding CMAF-packaged media [CMAF] to MSF.
+   This document updates MOQT Streaming Format by defining optional
+   syntax and semantics for carrying CMAF-packaged media.
 
 About This Document
 
@@ -49,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 December 2026.
+   This Internet-Draft will expire on 5 December 2026.
 
 Copyright Notice
 
@@ -168,7 +167,7 @@ Table of Contents
 
    *  MAY contain multiple successive CMAF Chunks.
 
-   *  MUST contain a single [ISOBMFF] track.
+   *  MUST contain a single track.
 
 3.4.  Group Packaging
 
@@ -181,7 +180,7 @@ Table of Contents
       of media samples.
 
    *  The Group boundary MUST align with a CMAF Fragment boundary.  CMAF
-      Fragments and CMAF Chunks MUST not span Groups.
+      Fragments and CMAF Chunks MUST NOT span Groups.
 
 3.5.  Catalog description
 
@@ -796,6 +795,12 @@ Table of Contents
               Multimedia application format (MPEG-A) — Part 19: Common
               media application format (CMAF) for segmented media",
               October 2021.
+
+   [LOC]      Zanaty, M., Nandakumar, S., and P. Thatcher, "Low Overhead
+              Media Container", Work in Progress, Internet-Draft, draft-
+              ietf-moq-loc-02, 15 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-moq-loc-
+              02>.
 
    [MoQTransport]
               Nandakumar, S., Vasiliev, V., Swett, I., and A. Frindell,
