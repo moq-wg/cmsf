@@ -108,8 +108,8 @@ entry with a "type" of "inline", a "data" value of the header encoded using [BAS
 value of an "initRef" property in all tracks which use that header for initialization.
 
 ## Switching sets and tracks
-This specification defines a direct mapping between CMAF Tracks ( [CMAF] Sect 3.2.1) and
-MOQT tracks ([MoQTransport] Sect 2.3).
+This specification defines a direct mapping between CMAF Tracks ( [CMAF] Section 3.2.1) and
+MOQT tracks ([MoQTransport] Section 2.3).
 
 CMAF switching sets are a set of one or more CMAF tracks (3.2.1), where each track is an
 alternative encoding of the same source content and are constrained to enable seamless
@@ -421,7 +421,7 @@ definition video qualities, along with an audio track.
 
 ~~~json
 {
-  "version": "1",
+  "version": "draft-01",
   "generatedAt": 1746104606044,
   "tracks":[
     {
@@ -518,7 +518,7 @@ FairPlay.
 
 ~~~json
 {
-  "version": "1",
+  "version": "draft-01",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
@@ -619,7 +619,7 @@ the ECCP model, suitable for testing and development.
 
 ~~~json
 {
-  "version": "1",
+  "version": "draft-01",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
