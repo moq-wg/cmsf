@@ -231,6 +231,13 @@ thus presentable.
 ]
 ~~~
 
+# URL usage
+
+CMSF inherits MSF semantics for the construction of URLs. In
+particular, the fragment type of "msf" MUST be used when referencing CMSF
+catalogs. An example CMSF URL is shown below:
+
+moqt://example.com/server/config?a=1#msf:customer-123--catalog&b=2
 
 # Content Protection {#contentprotection}
 
