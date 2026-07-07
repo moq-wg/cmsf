@@ -34,6 +34,7 @@ normative:
   MoQTransport: I-D.draft-ietf-moq-transport-18
   MSF:  I-D.draft-ietf-moq-msf-01
   LOC: I-D.draft-ietf-moq-loc-02
+  LOCMAF: I-D.draft-einarsson-moq-locmaf-01
   CMAF:
     author:
       - name: International Organization for Standardization
@@ -89,13 +90,17 @@ MSF and retains all the scope, capabilities and features of MSF including the ca
 format, timeline, ABR switching and LOC support. CMSF is targeted at real-time and
 interactive levels of live latency, as well as VOD content.
 
+CMSF also registers a packaging value for LOCMAF [LOCMAF], a compact encoding of
+CMAF-compliant media that is specified in a separate document and reuses the CMSF
+catalog, timeline, switching, and content-protection machinery unchanged.
+
 This document describes version 1 of the CMSF streaming format.
 
 # MSF Extension
 All of the specifications, requirements, and terminology defined in [MSF] apply to
 implementations of this extension unless explicitly noted otherwise in this document.
 
-# CMAF Packaging
+# CMAF Packaging {#cmafpackaging}
 
 ## Initialization headers {#initheaders}
 A CMAF header is a sequence of CMAF constrained ISO BMFF boxes that do not reference any
@@ -231,6 +236,74 @@ thus presentable.
 ]
 ~~~
 
+
+# LOCMAF Packaging {#locmafpackaging}
+
+LOCMAF [LOCMAF] is a compact packaging of CMAF-compliant media for MOQT. A LOCMAF
+Object carries the same media samples as the equivalent CMAF Chunk, but encodes the
+Movie Fragment Box (moof) header as a set of tagged, delta-coded fields. This lets a
+receiver either reconstruct the original CMAF Chunk for playback via Media Source
+Extensions, or extract the elementary samples directly for playback via WebCodecs.
+The Object encoding, the canonical CMAF reconstruction, and the initialization
+requirements are specified in [LOCMAF]; this document only registers the packaging
+value and its associated catalog field.
+
+Apart from the encoding of the Object payload, a LOCMAF track reuses the CMSF
+machinery defined in this document unchanged. In particular:
+
+* the switching-set, Group, and Object packaging requirements of {{cmafpackaging}}
+  apply to each LOCMAF Object as the CMAF Chunk it reconstructs to;
+* the CMAF header is carried in the catalog exactly as for CMAF tracks, as an
+  initDataList entry referenced from the track by "initRef" (see {{initheaders}});
+  a "cmaf" track and a "locmaf" track wrapping the same source MAY reference the
+  same initDataList entry; and
+* content protection is signaled exactly as for CMAF tracks, via the root-level
+  "contentProtections" array referenced by "contentProtectionRefIDs"
+  (see {{contentprotection}}).
+
+## Catalog description
+
+### LOCMAF packaging type
+This specification extends the allowed packaging values defined in [MSF]
+to include one further entry, as defined in Table 3 below:
+
+| Name              |   Value         |      Reference        |
+|:==================|:================|:======================|
+| LOCMAF            | locmaf          | [LOCMAF]              |
+
+Every Track entry in a CMSF catalog carrying LOCMAF-packaged media data MUST declare
+a "packaging" type value of "locmaf".
+
+### LOCMAF version {#locmafversion}
+Location: T    Required: Conditional   JSON Type: String
+
+A string identifying the LOCMAF packaging version used by the track, expressed as
+"major.minor" (for example, "0.3"). The LOCMAF Object encoding is versioned
+independently of the CMSF catalog "version". This field MUST be present when the
+track "packaging" value is "locmaf" and MUST NOT be present otherwise. A subscriber
+MUST NOT subscribe to a LOCMAF track whose "locmafVersion" it does not support; when
+the catalog offers the same source under an alternative packaging, it MAY select
+that instead.
+
+The following partial catalog illustrates a "locmaf" track that shares its
+initialization data with the equivalent "cmaf" track:
+
+~~~json
+{
+  "name": "hd-locmaf",
+  "renderGroup": 1,
+  "packaging": "locmaf",
+  "locmafVersion": "0.3",
+  "initRef": "init-hd",
+  "role": "video",
+  "codec": "avc1.640028",
+  "width": 1920,
+  "height": 1080,
+  "bitrate": 5000000,
+  "framerate": 30,
+  "altGroup": 1
+}
+~~~
 
 # Content Protection {#contentprotection}
 
