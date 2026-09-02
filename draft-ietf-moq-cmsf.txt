@@ -4,8 +4,8 @@
 
 Media Over QUIC                                                   W. Law
 Internet-Draft                                                    Akamai
-Intended status: Informational                               3 June 2026
-Expires: 5 December 2026
+Intended status: Informational                          2 September 2026
+Expires: 6 March 2027
 
 
      CMSF- a CMAF compliant implementation of MOQT Streaming Format
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 December 2026.
+   This Internet-Draft will expire on 6 March 2027.
 
 Copyright Notice
 
@@ -136,7 +136,7 @@ Table of Contents
 3.2.  Switching sets and tracks
 
    This specification defines a direct mapping between CMAF Tracks (
-   [CMAF] Sect 3.2.1) and MOQT tracks ([MoQTransport] Sect 2.3).
+   [CMAF] Section 3.2.1) and MOQT tracks ([MoQTransport] Section 2.3).
 
    CMAF switching sets are a set of one or more CMAF tracks (3.2.1),
    where each track is an alternative encoding of the same source
@@ -524,7 +524,7 @@ Table of Contents
    medium definition video qualities, along with an audio track.
 
    {
-     "version": "1",
+     "version": "draft-01",
      "generatedAt": 1746104606044,
      "tracks":[
        {
@@ -618,7 +618,7 @@ Table of Contents
    PlayReady, and FairPlay.
 
    {
-     "version": "1",
+     "version": "draft-01",
      "generatedAt": 1746104606044,
      "contentProtections": [
        {
@@ -717,7 +717,7 @@ Table of Contents
    following the ECCP model, suitable for testing and development.
 
    {
-     "version": "1",
+     "version": "draft-01",
      "generatedAt": 1746104606044,
      "contentProtections": [
        {
