@@ -376,6 +376,14 @@ Location: DS    Required: Optional   JSON Type: String
 A string indicating the minimum robustness level required by the DRM system.
 The interpretation of this value is DRM system-specific.
 
+##### Output Protection {#outputprotection}
+Location: DS    Required: Optional   JSON Type: Object
+
+An object with an "hdcp" String giving the minimum HDCP version required to
+output content decrypted with the keys of this entry. This field is
+informative to the subscriber. Enforcement is performed by the DRM system
+through the license.
+
 ### Content Protection Reference IDs {#contentprotectionrefids}
 Location: T    Required: Optional   JSON Type: Array of Strings
 
@@ -413,6 +421,94 @@ When using ClearKey:
   that implements the EME ClearKey protocol.
 * The optional `pssh` field SHOULD contain a Base64-encoded PSSH box with
   version 1, the Common System ID, and the KID(s) in the KID list.
+
+## Content protection preflight {#cppreflight}
+
+This section defines a probe type for the MSF preflight ({{MSF}} Section
+"Preflight") that lets a publisher learn, and verify, the content protection
+capabilities of a subscriber before authorizing protected tracks.
+
+Identifier: "org.ietf.moq.cmsf.contentprotection"
+
+### Request value
+
+The request value is an Object with the following fields:
+
+* contentProtections (Array, Required): an Array of Content Protection objects
+  ({{contentprotections}}) describing canary keys. The drmSystem object of each
+  entry MAY contain a robustnessLadder field (Array of Strings) in place of the
+  robustness field, listing the robustness values to test in descending order
+  of preference. An empty Array indicates that the DRM system does not expose
+  robustness values to the subscriber.
+* hdcp (Array of Strings, Optional): the HDCP versions for which the subscriber
+  is to report output status, for example "1.4" and "2.2".
+* encryptionSchemes (Array of Strings, Optional): the Common Encryption schemes
+  to test, from "cenc" and "cbcs".
+* canaryPlayback (Object, Optional): the name, optional namespace, and initRef
+  of a short protected track that the subscriber decrypts and decodes to confirm
+  that playback succeeds under the highest robustness granted.
+* sessionTypes (Array of Strings, Optional): license session types to test,
+  for example "temporary" and "persistent-license".
+
+The canary initialization data of each entry MUST embed the preflight request
+nonce in a field that is covered by the integrity protection of the DRM
+system's license request. Examples are the content_id of a Widevine PSSH, the
+CUSTOMATTRIBUTES element of a PlayReady Header Object, and the content
+identifier of a FairPlay Streaming key request. Canary keys MUST NOT be used to
+encrypt content.
+
+{{fig-cp-nonce-binding}} shows how the nonce binds the evidence to the request.
+
+~~~ ascii-art
+       Subscriber                                   Preflight
+     (browser + CDM)                                 Service
+            |                                           |
+            | request: nonce N, canary init data with N |
+            |<------------------------------------------|
+[generateRequest(canary)]                               |
+[CDM signs license request]                             |
+     [containing N]                                     |
+            | response: challenge(N), granted levels    |
+            |------------------------------------------>|
+            |                                [verify CDM signature]
+            |                               [N matches this request]
+            |                                  [level, revocation]
+            |                               [reject replay/mismatch]
+~~~
+{: #fig-cp-nonce-binding title="Binding content protection evidence to a preflight request"}
+
+### Result value
+
+The result value is an Object with one key per refID from the request. Each
+value is an Object with the following fields:
+
+* supported (Boolean, Required).
+* granted (Array of Strings, Optional): the robustness values from the
+  robustnessLadder that the subscriber was able to obtain.
+* challenges (Object, Optional): one key per granted robustness value tested,
+  holding the Base64 {{BASE64}} encoded license request generated for the
+  canary key. Publishers determine the actual security level of the subscriber
+  from these values, not from the granted field.
+* encryptionSchemes (Object, Optional): a Boolean per scheme tested.
+* hdcp (Object, Optional): one key per HDCP version tested, holding a String
+  status such as "usable" or "output-restricted".
+* canaryPlayback (Object, Optional): framesRendered and droppedFrames (Number)
+  and keyStatus (String).
+* sessionTypes (Object, Optional): a Boolean per session type tested.
+
+The minimum HDCP version required for each entry is signaled in the catalog
+with the outputProtection field ({{outputprotection}}).
+
+### Robustness values (informative)
+
+| DRM system | Robustness value(s)                     | Common description |
+|:===========|:========================================|:===================|
+| Widevine   | HW_SECURE_ALL, HW_SECURE_DECODE         | L1                 |
+| Widevine   | HW_SECURE_CRYPTO                        | L2                 |
+| Widevine   | SW_SECURE_DECODE, SW_SECURE_CRYPTO      | L3                 |
+| PlayReady  | 3000                                    | SL3000             |
+| PlayReady  | 2000                                    | SL2000             |
+| FairPlay   | none exposed; level reported in request | Main, Baseline     |
 
 # Catalog Examples
 
@@ -682,10 +778,28 @@ the ECCP model, suitable for testing and development.
 
 TODO Security
 
+## Content protection preflight {#security-cppreflight}
+
+The robustness values granted to a subscriber are reported by the subscriber
+and can be falsified. Publishers SHOULD determine the security level from the
+license requests returned in the challenges field, and license servers SHOULD
+independently enforce the same requirement when issuing content keys.
+
+Content that is delivered to subscribers at different security levels SHOULD
+be encrypted with different keys, so that a key obtained at a lower level does
+not decrypt content intended for a higher one. Audio SHOULD be encrypted with a
+key separate from video, since some DRM systems do not apply hardware
+robustness to audio.
+
 
 # IANA Considerations
 
-This document has no IANA actions.
+This document registers the following entry in the "MSF Preflight Probe
+Types" registry:
+
+| Identifier                          | Description                       | Reference |
+|:====================================|:==================================|:==========|
+| org.ietf.moq.cmsf.contentprotection | Content protection capability     | RFC XXXX  |
 
 
 --- back
