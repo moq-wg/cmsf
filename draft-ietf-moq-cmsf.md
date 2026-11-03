@@ -72,6 +72,48 @@ informative:
     title: "DASH-IF Implementation Guidelines: Encryption and Content Protection (ECCP)"
     target: https://dashif.org/docs/DASH-IF-ECCP-v1.0.0.pdf
     date: 2023
+  EME:
+    author:
+      - name: W3C
+        org: W3C
+    title: "Encrypted Media Extensions"
+    target: https://www.w3.org/TR/encrypted-media/
+    date: false
+  MEDIA-CAPABILITIES:
+    author:
+      - name: W3C
+        org: W3C
+    title: "Media Capabilities"
+    target: https://www.w3.org/TR/media-capabilities/
+    date: false
+  HDCP:
+    author:
+      - name: Digital Content Protection LLC
+        org: Digital Content Protection LLC
+    title: "High-bandwidth Digital Content Protection (HDCP) Specifications"
+    target: https://www.digital-cp.com/hdcp-specifications
+    date: false
+  WIDEVINE:
+    author:
+      - name: Google
+        org: Google
+    title: "Widevine DRM"
+    target: https://developers.google.com/widevine/drm/overview
+    date: false
+  PLAYREADY:
+    author:
+      - name: Microsoft
+        org: Microsoft
+    title: "PlayReady Documentation"
+    target: https://learn.microsoft.com/en-us/playready/
+    date: false
+  FAIRPLAY:
+    author:
+      - name: Apple
+        org: Apple
+    title: "FairPlay Streaming"
+    target: https://developer.apple.com/streaming/fps/
+    date: false
 
 ...
 
@@ -623,16 +665,24 @@ A preflight decision is a JSON {{JSON}} Object with the following fields:
 * catalog (Object, Optional): an Object holding the name, and optionally the
   namespace, of the catalog track that declares the authorized tracks. If
   absent, the authorized tracks are declared in the catalog containing the
-  Preflight field.
+  Preflight field. If the named catalog track requires preflight, it MUST also
+  be listed in authorizedTracks.
 * authorizedTracks (Array, Required): an Array of Objects, each holding the
   name and, optionally, the namespace of a track the subscriber is authorized
   to subscribe to.
 * deniedTracks (Array, Optional): an Array of Objects, each holding the name,
   optionally the namespace, and optionally a "reason" String, of a track the
-  subscriber is not authorized to subscribe to.
+  subscriber is not authorized to subscribe to. The reason is informative and
+  is not intended for display to end users. This document defines the reason
+  values "decode-not-supported", "display-not-supported",
+  "hdr-not-supported", "robustness-not-met", "output-protection-not-met" and
+  "policy". Other values MAY be used, and a subscriber MUST treat an unknown
+  reason value as "policy".
 * authorization (Object, Optional): an Object whose keys are authorization
   scheme identifiers ([MSF] Section "Authorization Info") and whose values are
-  the tokens to present for the authorized tracks.
+  the tokens to present for the authorized tracks. For tracks listed in
+  authorizedTracks, these tokens take precedence over any authInfo value
+  declared for the same scheme in the catalog.
 * recheck (Object, Optional): an Object holding a submitUri or a submitTrack to
   which the subscriber SHOULD submit a new preflight response if a probe result
   changes during the session.
@@ -700,10 +750,12 @@ The request value is an Object with the following fields:
   ({{contentprotections}}) describing canary keys. The drmSystem object of each
   entry MAY contain a robustnessLadder field (Array of Strings) in place of the
   robustness field, listing the robustness values to test in descending order
-  of preference. An empty Array indicates that the DRM system does not expose
-  robustness values to the subscriber.
-* hdcp (Array of Strings, Optional): the HDCP versions for which the subscriber
-  is to report output status, for example "1.4" and "2.2".
+  of preference. An empty robustnessLadder indicates that the DRM system does
+  not expose robustness values to the subscriber. In web user agents,
+  robustness values are those used with the Encrypted Media Extensions
+  {{EME}}.
+* hdcp (Array of Strings, Optional): the HDCP {{HDCP}} versions for which the
+  subscriber is to report output status, for example "1.4" and "2.2".
 * encryptionSchemes (Array of Strings, Optional): the Common Encryption schemes
   to test, from "cenc" and "cbcs".
 * canaryPlayback (Object, Optional): the name, optional namespace, and initRef
@@ -714,10 +766,15 @@ The request value is an Object with the following fields:
 
 The canary initialization data of each entry MUST embed the preflight request
 nonce in a field that is covered by the integrity protection of the DRM
-system's license request. Examples are the content_id of a Widevine PSSH, the
-CUSTOMATTRIBUTES element of a PlayReady Header Object, and the content
-identifier of a FairPlay Streaming key request. Canary keys MUST NOT be used to
-encrypt content.
+system's license request. Examples are the content_id of a Widevine
+{{WIDEVINE}} PSSH, the CUSTOMATTRIBUTES element of a PlayReady {{PLAYREADY}}
+Header Object, and the content identifier of a FairPlay Streaming
+{{FAIRPLAY}} key request. Canary keys MUST NOT be used to encrypt content.
+
+In web user agents, the subscriber obtains each challenge by passing the
+canary initialization data to generateRequest() on an EME {{EME}} media key
+session created at the robustness value being tested, and returns the
+resulting license request message without sending it to a license server.
 
 {{fig-cp-nonce-binding}} shows how the nonce binds the evidence to the request.
 
@@ -753,7 +810,8 @@ value is an Object with the following fields:
   from these values, not from the granted field.
 * encryptionSchemes (Object, Optional): a Boolean per scheme tested.
 * hdcp (Object, Optional): one key per HDCP version tested, holding a String
-  status such as "usable" or "output-restricted".
+  status such as "usable" or "output-restricted". In web user agents these
+  are the key status values defined by EME {{EME}}.
 * canaryPlayback (Object, Optional): framesRendered and droppedFrames (Number)
   and keyStatus (String).
 * sessionTypes (Object, Optional): a Boolean per session type tested.
@@ -762,6 +820,10 @@ The minimum HDCP version required for each entry is signaled in the catalog
 with the outputProtection field ({{outputprotection}}).
 
 #### Robustness values (informative) {#cppreflight-robustness}
+
+The following table lists commonly used robustness values for Widevine
+{{WIDEVINE}}, PlayReady {{PLAYREADY}} and FairPlay Streaming {{FAIRPLAY}}.
+The authoritative definitions are those of each DRM system.
 
 | DRM system | Robustness value(s)                     | Common description |
 |:===========|:========================================|:===================|
@@ -784,7 +846,7 @@ Optional) holding transferFunction, colorGamut and metadataType Strings.
 The result is an Object with one key per label. Each value is an Object with
 the fields supported (Boolean, Required), and smooth and powerEfficient
 (Boolean, Optional). In web user agents these values correspond to those
-returned by the Media Capabilities API.
+returned by the Media Capabilities API {{MEDIA-CAPABILITIES}}.
 
 ### Display probe {#displayprobe}
 
@@ -824,7 +886,7 @@ is resolved from the URI fragment ([MSF] Section "Variable Substitution").
   "tracks": [
     {
       "name": "preflight-%sid%",
-      "namespace": "example.com/preflight",
+      "namespace": "example.com/preflight/%sid%",
       "packaging": "eventtimeline",
       "eventType": "org.ietf.moq.cmsf.preflight.request",
       "mimeType": "application/json",
@@ -833,8 +895,7 @@ is resolved from the URI fragment ([MSF] Section "Variable Substitution").
     {
       "name": "catalog-premium",
       "packaging": "catalog",
-      "preflightRequired": true,
-      "authInfo": { "cat": "%tier-token%" }
+      "preflightRequired": true
     },
     {
       "name": "catalog-sd",
@@ -844,12 +905,13 @@ is resolved from the URI fragment ([MSF] Section "Variable Substitution").
 }
 ~~~
 
-Preflight request record:
+Preflight request record. The content protection probe asks for a Widevine
+canary key whose PSSH carries the nonce in its content_id field:
 
 ~~~json
 [
   {
-    "l": [0, 0],
+    "L": [0, 0],
     "data": {
       "nonce": "n-7Qe2xK",
       "expires": 1746104636044,
@@ -860,7 +922,25 @@ Preflight request record:
             "bitrate": 16000000 }
         ],
         "org.ietf.moq.cmsf.display": {},
-        "org.ietf.moq.cmsf.clock": {}
+        "org.ietf.moq.cmsf.clock": {},
+        "org.ietf.moq.cmsf.contentprotection": {
+          "contentProtections": [
+            {
+              "refID": "wv-canary",
+              "defaultKID": ["5f1e7c2a-93b4-4d61-8e0f-2a7c9b3d4e11"],
+              "scheme": "cbcs",
+              "drmSystem": {
+                "systemID": "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+                "robustnessLadder": [
+                  "HW_SECURE_ALL", "SW_SECURE_CRYPTO"
+                ],
+                "pssh": "AAAAVnBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7Q..."
+              }
+            }
+          ],
+          "hdcp": ["2.2"],
+          "encryptionSchemes": ["cbcs"]
+        }
       }
     }
   }
@@ -880,10 +960,28 @@ Preflight response, sent by HTTP POST to the submitUri:
       "width": 3840, "height": 2160, "dynamicRange": "standard",
       "external": false
     },
-    "org.ietf.moq.cmsf.clock": { "clientTime": 1746104607180 }
+    "org.ietf.moq.cmsf.clock": { "clientTime": 1746104607180 },
+    "org.ietf.moq.cmsf.contentprotection": {
+      "wv-canary": {
+        "supported": true,
+        "granted": ["HW_SECURE_ALL", "SW_SECURE_CRYPTO"],
+        "challenges": {
+          "HW_SECURE_ALL": "CAESvAsKiAsIARLtCQquAggCEhBhM...",
+          "SW_SECURE_CRYPTO": "CAES9QoKwQoIARL0CAqwAggCEhCW..."
+        },
+        "encryptionSchemes": { "cbcs": true },
+        "hdcp": { "2.2": "usable" }
+      }
+    }
   }
 }
 ~~~
+
+The publisher verifies the signature of the HW_SECURE_ALL challenge, confirms
+that the content_id it carries contains the request nonce, and determines the
+security level from the challenge itself. It then authorizes the 2160p tracks,
+and denies the HDR rendition because the display probe reported a standard
+dynamic range.
 
 Preflight decision, returned in the HTTP response:
 
@@ -893,6 +991,7 @@ Preflight decision, returned in the HTTP response:
   "expires": 1746104906044,
   "catalog": { "name": "catalog-premium" },
   "authorizedTracks": [
+    { "name": "catalog-premium" },
     { "name": "video-2160" },
     { "name": "video-1080" },
     { "name": "audio" }
@@ -1217,6 +1316,15 @@ identifiers. Where verifiable evidence necessarily identifies a device, as
 some content protection challenges do, probe type specifications SHOULD
 require any privacy protections that the evidence source offers.
 
+For the content protection probe ({{cppreflight}}), a license request can
+carry a device or client identifier. For example, a Widevine {{WIDEVINE}}
+license request includes the client identification of the device unless it is
+encrypted to the license service using a service certificate. Publishers
+SHOULD use such privacy features when they are available, SHOULD limit access
+to challenges to the service that verifies them, and SHOULD NOT use
+identifiers obtained from challenges for purposes other than the
+authorization decision.
+
 
 # IANA Considerations
 
@@ -1232,10 +1340,11 @@ Types" registry established by [MSF]:
 
 ## CMSF Preflight Probe Types registry {#iana-preflight-probe-types}
 
-This document establishes the "CMSF Preflight Probe Types" registry, part of
-the "MOQT Streaming Format (MSF) Parameters" registry group. The registration
-policy is Specification Required {{!RFC8126}}. Each entry contains an
-Identifier, a Description, and a Reference. The initial contents are:
+This document establishes the "CMSF Preflight Probe Types" registry, in the
+same registry group as the "MSF Event Timeline Types" registry established by
+[MSF]. The registration policy is Specification Required {{!RFC8126}}. Each
+entry contains an Identifier, a Description, and a Reference. The initial
+contents are:
 
 | Identifier                          | Description                    | Reference |
 |:====================================|:===============================|:==========|
@@ -1243,6 +1352,24 @@ Identifier, a Description, and a Reference. The initial contents are:
 | org.ietf.moq.cmsf.decode            | Codec decoding capability      | RFC XXXX  |
 | org.ietf.moq.cmsf.display           | Display characteristics        | RFC XXXX  |
 | org.ietf.moq.cmsf.clock             | Subscriber wallclock time      | RFC XXXX  |
+
+### Guidance for Designated Experts {#iana-preflight-probe-experts}
+
+Designated experts should evaluate registration requests against the
+following criteria, per {{!RFC8126}}, Section 4.6:
+
+* The specification defines the request value, the result value, and the
+  form of the result when the probe is not executed, as required by
+  {{preflightprobetypes}}.
+* The specification states whether, and how, the publisher can verify the
+  result independently of the subscriber. A probe type whose result cannot be
+  verified should say so explicitly.
+* The specification considers the fingerprinting impact of its result, as
+  described in {{security-preflight-privacy}}, and avoids stable device
+  identifiers where it can.
+* The identifier does not duplicate the purpose of an existing entry.
+* Identifiers registered by specifications outside the IETF stream should use
+  Reverse Domain Name Notation under a domain controlled by the registrant.
 
 
 --- back
