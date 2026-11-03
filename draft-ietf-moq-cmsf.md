@@ -42,6 +42,8 @@ normative:
             Common media application format (CMAF) for segmented media"
     date: 2021-10
   BASE64: RFC4648
+  JSON: RFC8259
+  HTTP: RFC9110
   CENC:
     author:
       - name: International Organization for Standardization
@@ -70,6 +72,48 @@ informative:
     title: "DASH-IF Implementation Guidelines: Encryption and Content Protection (ECCP)"
     target: https://dashif.org/docs/DASH-IF-ECCP-v1.0.0.pdf
     date: 2023
+  EME:
+    author:
+      - name: W3C
+        org: W3C
+    title: "Encrypted Media Extensions"
+    target: https://www.w3.org/TR/encrypted-media/
+    date: false
+  MEDIA-CAPABILITIES:
+    author:
+      - name: W3C
+        org: W3C
+    title: "Media Capabilities"
+    target: https://www.w3.org/TR/media-capabilities/
+    date: false
+  HDCP:
+    author:
+      - name: Digital Content Protection LLC
+        org: Digital Content Protection LLC
+    title: "High-bandwidth Digital Content Protection (HDCP) Specifications"
+    target: https://www.digital-cp.com/hdcp-specifications
+    date: false
+  WIDEVINE:
+    author:
+      - name: Google
+        org: Google
+    title: "Widevine DRM"
+    target: https://developers.google.com/widevine/drm/overview
+    date: false
+  PLAYREADY:
+    author:
+      - name: Microsoft
+        org: Microsoft
+    title: "PlayReady Documentation"
+    target: https://learn.microsoft.com/en-us/playready/
+    date: false
+  FAIRPLAY:
+    author:
+      - name: Apple
+        org: Apple
+    title: "FairPlay Streaming"
+    target: https://developer.apple.com/streaming/fps/
+    date: false
 
 ...
 
@@ -376,6 +420,14 @@ Location: DS    Required: Optional   JSON Type: String
 A string indicating the minimum robustness level required by the DRM system.
 The interpretation of this value is DRM system-specific.
 
+##### Output Protection {#outputprotection}
+Location: DS    Required: Optional   JSON Type: Object
+
+An object with an "hdcp" String giving the minimum HDCP version required to
+output content decrypted with the keys of this entry. This field is
+informative to the subscriber. Enforcement is performed by the DRM system
+through the license.
+
 ### Content Protection Reference IDs {#contentprotectionrefids}
 Location: T    Required: Optional   JSON Type: Array of Strings
 
@@ -413,6 +465,543 @@ When using ClearKey:
   that implements the EME ClearKey protocol.
 * The optional `pssh` field SHOULD contain a Base64-encoded PSSH box with
   version 1, the Common System ID, and the KID(s) in the KID list.
+
+# Capability Preflight {#preflightworkflow}
+
+Some content is only delivered to subscribers that meet requirements such as a
+decoding capability, display characteristics, or a minimum content protection
+robustness. Capability preflight allows a publisher to learn, and where
+possible verify, these capabilities before it issues authorization for the
+tracks that depend on them, so that a subscriber is only authorized for tracks
+it is able, and permitted, to consume.
+
+Without preflight, the first check that inspects the subscriber itself happens
+when the subscriber tries to use media it has already been authorized for and
+received, for example when it decodes the media or, for protected content,
+when it acquires a license. Preflight moves that check ahead of track access,
+so that:
+
+- relays only deliver tracks to subscribers that have met the publisher's
+  requirements;
+- track authorization and any later per-subscriber checks are derived from
+  the same decision;
+- subscribers are not authorized for tracks that they will be unable to use,
+  which would otherwise fail at playback time.
+
+{{fig-preflight-order}} compares the two orderings.
+
+~~~ ascii-art
+Without preflight:
+
+  catalog --> token --> SUBSCRIBE --> media --> use (decode, license)
+                                                 ^
+                                     first check of the subscriber
+
+With preflight:
+
+  catalog --> preflight --> scoped token --> SUBSCRIBE --> media --> use
+                  ^                              ^
+         subscriber check            relay enforces token scope
+~~~
+{: #fig-preflight-order title="Order of subscriber checks with and without preflight"}
+
+The preflight mechanism is independent of the capabilities it checks. What is
+checked is defined by probe types ({{preflightprobetypes}}). This document
+defines a content protection probe type and probe types for decoding, display
+and clock capabilities. Other specifications can define further probe types.
+
+Preflight results are an input to an authorization decision. Access is enforced
+by the authorization scheme ([MSF] Section "Authorization") and, for protected
+content, by the content protection system. Preflight replaces neither.
+
+## Preflight catalog fields {#preflightcatalogfields}
+
+This section defines catalog fields in addition to those defined in [MSF].
+
+### Preflight {#preflight}
+Location: R    Required: Optional   JSON Type: Object
+
+An object signaling that the publisher offers a capability preflight through
+which subscribers obtain authorization for tracks marked with the Preflight
+required field ({{preflightrequired}}). The object has the following fields:
+
+* requestTrack (String, Required): the Track Name of an event timeline track
+  ([MSF] Section "Event Timeline track"), declared in the tracks array, with an
+  eventType of "org.ietf.moq.cmsf.preflight.request".
+* submitUri (String, Conditional): an "https" URI to which the subscriber
+  submits its preflight response.
+* submitTrack (String, Conditional): the Track Name of a publish track ([MSF]
+  Section "Publish tracks") with an eventType of
+  "org.ietf.moq.cmsf.preflight.response" on which the subscriber publishes its
+  preflight response.
+* timeout (Number, Optional): the maximum time, in milliseconds, that a
+  subscriber SHOULD wait for a preflight decision after submitting its response.
+* fallbackCatalog (String, Optional): the Track Name of a catalog track whose
+  tracks the subscriber MAY use if it does not support preflight, or if the
+  preflight fails or times out.
+
+Exactly one of submitUri or submitTrack MUST be present. The values of
+requestTrack, submitUri, submitTrack and fallbackCatalog MAY contain variables
+([MSF] Section "Variable Substitution"), allowing a single cached catalog to
+direct each subscriber to a per-session preflight exchange.
+
+### Preflight required {#preflightrequired}
+Location: T    Required: Optional   JSON Type: Boolean
+
+When TRUE, authorization for this track is obtained through the preflight
+exchange ({{preflightexchange}}). A subscriber MUST NOT send SUBSCRIBE or FETCH
+for such a track until it has received a preflight decision that lists the
+track as authorized. This field MUST NOT be included if it is FALSE.
+
+This field MAY be set on a track with a packaging value of "catalog", in which
+case it applies to that catalog track and to every track the referenced catalog
+declares.
+
+A catalog that declares a track with this field set to TRUE MUST contain the
+Preflight field ({{preflight}}), or be referenced by a catalog that does.
+
+## Preflight exchange {#preflightexchange}
+
+The preflight exchange proceeds as follows:
+
+1. The subscriber obtains a catalog containing the Preflight field
+   ({{preflight}}).
+2. The subscriber subscribes to the request track and receives a preflight
+   request ({{preflightrequest}}).
+3. The subscriber executes the requested probes and submits a preflight
+   response ({{preflightresponse}}) to the submitUri, or publishes it on the
+   submitTrack.
+4. The publisher, or a service acting on its behalf, evaluates the response and
+   returns a preflight decision ({{preflightdecision}}).
+5. The subscriber subscribes to the authorized tracks, presenting the
+   authorization provided in the decision as described in [MSF] Section
+   "Presenting Authorization".
+
+{{fig-preflight-exchange}} shows the exchange followed by track access.
+
+~~~ ascii-art
+Subscriber                     Relay                 Preflight
+                                                      Service
+     |                           |                       |
+     | SUBSCRIBE catalog         |                       |
+     |-------------------------->|                       |
+     | catalog with preflight    |                       |
+     |<--------------------------|                       |
+     | SUBSCRIBE request track   |                       |
+     |-------------------------->|                       |
+     | preflight request: nonce, probes                  |
+     |<--------------------------------------------------|
+[run probes]                     |                       |
+     | preflight response: results, evidence             |
+     |-------------------------------------------------->|
+     |                           |          [verify, decide]
+     | decision: authorizedTracks, token                 |
+     |<--------------------------------------------------|
+     | SUBSCRIBE authorized track, token                 |
+     |-------------------------->|                       |
+     |                     [scope check]                 |
+     | media objects             |                       |
+     |<--------------------------|                       |
+~~~
+{: #fig-preflight-exchange title="Preflight exchange followed by track access"}
+
+A subscriber that does not support preflight, or whose preflight fails or times
+out, MUST NOT subscribe to tracks for which Preflight required
+({{preflightrequired}}) is TRUE. Such a subscriber MAY use the tracks declared
+in the fallbackCatalog, if one is present.
+
+## Preflight request {#preflightrequest}
+
+A preflight request is an event timeline record ([MSF] Section "Event Timeline
+data format") published on the request track. The eventType of the request
+track MUST be "org.ietf.moq.cmsf.preflight.request". The record SHOULD use a
+Location index reference. The data Object contains the following fields:
+
+* nonce (String, Required): a value that is unique to this request and
+  unpredictable to the subscriber. The value MUST conform to the restrictions
+  on variable values defined in [MSF] Section "Variable Syntax", so that probes
+  can embed it in the evidence they generate.
+* expires (Number, Required): the wallclock time, in milliseconds since the
+  Unix epoch, after which the publisher will not accept a response to this
+  request.
+* probes (Object, Required): an Object whose keys are probe type identifiers
+  ({{preflightprobetypes}}) and whose values hold the parameters for that probe
+  type, as defined by the specification of the probe type.
+
+A record on the request track whose data Object contains a "decision" field is
+a preflight decision ({{preflightdecision}}), not a request.
+
+A subscriber MUST NOT fail the exchange because a request contains a probe type
+it does not understand. It MUST report such probe types as unsupported in its
+response.
+
+## Preflight response {#preflightresponse}
+
+A preflight response is a JSON {{JSON}} Object with the following fields:
+
+* nonce (String, Required): the nonce from the request being answered.
+* results (Object, Required): an Object containing one key for each probe type
+  present in the request. The value is the result Object defined by the
+  specification of that probe type or, if the subscriber did not execute the
+  probe, an Object containing the single field "unsupported" with the value
+  TRUE.
+
+When the Preflight field contains a submitUri, the subscriber sends the
+response as the body of an HTTP {{HTTP}} POST request to that URI, with a media
+type of "application/json". The method used to authenticate this request is
+deployment-specific.
+
+When the Preflight field contains a submitTrack, the subscriber publishes the
+response as the data Object of an event timeline record on that publish track.
+
+## Preflight decision {#preflightdecision}
+
+A preflight decision is a JSON {{JSON}} Object with the following fields:
+
+* nonce (String, Required): the nonce from the request being answered.
+* expires (Number, Required): the wallclock time, in milliseconds since the
+  Unix epoch, after which the decision and any authorization it carries are no
+  longer valid.
+* catalog (Object, Optional): an Object holding the name, and optionally the
+  namespace, of the catalog track that declares the authorized tracks. If
+  absent, the authorized tracks are declared in the catalog containing the
+  Preflight field. If the named catalog track requires preflight, it MUST also
+  be listed in authorizedTracks.
+* authorizedTracks (Array, Required): an Array of Objects, each holding the
+  name and, optionally, the namespace of a track the subscriber is authorized
+  to subscribe to.
+* deniedTracks (Array, Optional): an Array of Objects, each holding the name,
+  optionally the namespace, and optionally a "reason" String, of a track the
+  subscriber is not authorized to subscribe to. The reason is informative and
+  is not intended for display to end users. This document defines the reason
+  values "decode-not-supported", "display-not-supported",
+  "hdr-not-supported", "robustness-not-met", "output-protection-not-met" and
+  "policy". Other values MAY be used, and a subscriber MUST treat an unknown
+  reason value as "policy".
+* authorization (Object, Optional): an Object whose keys are authorization
+  scheme identifiers ([MSF] Section "Authorization Info") and whose values are
+  the tokens to present for the authorized tracks. For tracks listed in
+  authorizedTracks, these tokens take precedence over any authInfo value
+  declared for the same scheme in the catalog.
+* recheck (Object, Optional): an Object holding a submitUri or a submitTrack to
+  which the subscriber SHOULD submit a new preflight response if a probe result
+  changes during the session.
+
+When the response was submitted to a submitUri, the decision is returned as the
+body of the HTTP response with a status code of 200. A publisher that denies
+access to every track that requires preflight MAY instead return status code
+403.
+
+When the response was published on a submitTrack, the decision is published on
+the request track as an event timeline record whose data Object contains a
+single field, "decision", holding the decision Object. A decision that carries
+authorization tokens MUST only be published on a track whose namespace is
+unique to the subscriber session.
+
+The subscriber MUST treat any track that requires preflight and is not listed
+in authorizedTracks as denied. It MUST NOT send SUBSCRIBE or FETCH for denied
+tracks. A publisher SHOULD scope the tokens in a decision to exactly the tracks
+listed in authorizedTracks. A relay that rejects a request for a track outside
+that scope does so with an insufficient-scope failure, which the subscriber
+handles without retrying the same token.
+
+## Token acquisition via preflight {#preflighttoken}
+
+[MSF] leaves token acquisition out of scope. Preflight provides one optional,
+in-band mechanism for it. A publisher MAY require subscribers to complete a
+preflight before authorization is issued for certain tracks, identified by the
+Preflight required field ({{preflightrequired}}). The authorization field of
+the preflight decision ({{preflightdecision}}) then provides the token, which
+the subscriber presents as described in [MSF] Section "Presenting
+Authorization". Other token acquisition mechanisms remain available for tracks
+that do not require preflight.
+
+## Preflight probe types {#preflightprobetypes}
+
+A probe type identifies a capability check, the parameters the publisher sends
+in a request, and the result the subscriber returns. Probe types are listed in
+the "CMSF Preflight Probe Types" registry ({{iana-preflight-probe-types}}).
+Probe types that are not registered SHOULD use Reverse Domain Name Notation.
+
+A specification defining a probe type defines its identifier, its request
+value, its result value, and how, if at all, the publisher can verify the
+result. Probe types whose results gate access to tracks SHOULD return evidence
+that the publisher can verify independently of the subscriber, for example a
+challenge signed by a trusted component of the subscriber platform that embeds
+the request nonce.
+
+This document defines the following probe types.
+
+### Content protection probe {#cppreflight}
+
+Identifier: "org.ietf.moq.cmsf.contentprotection"
+
+This probe type lets a publisher learn, and verify, the content protection
+capabilities of a subscriber before authorizing protected tracks. The license
+server continues to enforce its own policy at license acquisition, so
+protected tracks are checked twice: by the relay, through the token scope
+derived from the preflight decision, and by the license server.
+
+#### Request value {#cppreflight-request}
+
+The request value is an Object with the following fields:
+
+* contentProtections (Array, Required): an Array of Content Protection objects
+  ({{contentprotections}}) describing canary keys. The drmSystem object of each
+  entry MAY contain a robustnessLadder field (Array of Strings) in place of the
+  robustness field, listing the robustness values to test in descending order
+  of preference. An empty robustnessLadder indicates that the DRM system does
+  not expose robustness values to the subscriber. In web user agents,
+  robustness values are those used with the Encrypted Media Extensions
+  {{EME}}.
+* hdcp (Array of Strings, Optional): the HDCP {{HDCP}} versions for which the
+  subscriber is to report output status, for example "1.4" and "2.2".
+* encryptionSchemes (Array of Strings, Optional): the Common Encryption schemes
+  to test, from "cenc" and "cbcs".
+* canaryPlayback (Object, Optional): the name, optional namespace, and initRef
+  of a short protected track that the subscriber decrypts and decodes to confirm
+  that playback succeeds under the highest robustness granted.
+* sessionTypes (Array of Strings, Optional): license session types to test,
+  for example "temporary" and "persistent-license".
+
+The canary initialization data of each entry MUST embed the preflight request
+nonce in a field that is covered by the integrity protection of the DRM
+system's license request. Examples are the content_id of a Widevine
+{{WIDEVINE}} PSSH, the CUSTOMATTRIBUTES element of a PlayReady {{PLAYREADY}}
+Header Object, and the content identifier of a FairPlay Streaming
+{{FAIRPLAY}} key request. Canary keys MUST NOT be used to encrypt content.
+
+In web user agents, the subscriber obtains each challenge by passing the
+canary initialization data to generateRequest() on an EME {{EME}} media key
+session created at the robustness value being tested, and returns the
+resulting license request message without sending it to a license server.
+
+{{fig-cp-nonce-binding}} shows how the nonce binds the evidence to the request.
+
+~~~ ascii-art
+       Subscriber                                   Preflight
+     (browser + CDM)                                 Service
+            |                                           |
+            | request: nonce N, canary init data with N |
+            |<------------------------------------------|
+[generateRequest(canary)]                               |
+[CDM signs license request]                             |
+     [containing N]                                     |
+            | response: challenge(N), granted levels    |
+            |------------------------------------------>|
+            |                                [verify CDM signature]
+            |                               [N matches this request]
+            |                                  [level, revocation]
+            |                               [reject replay/mismatch]
+~~~
+{: #fig-cp-nonce-binding title="Binding content protection evidence to a preflight request"}
+
+#### Result value {#cppreflight-result}
+
+The result value is an Object with one key per refID from the request. Each
+value is an Object with the following fields:
+
+* supported (Boolean, Required).
+* granted (Array of Strings, Optional): the robustness values from the
+  robustnessLadder that the subscriber was able to obtain.
+* challenges (Object, Optional): one key per granted robustness value tested,
+  holding the Base64 {{BASE64}} encoded license request generated for the
+  canary key. Publishers determine the actual security level of the subscriber
+  from these values, not from the granted field.
+* encryptionSchemes (Object, Optional): a Boolean per scheme tested.
+* hdcp (Object, Optional): one key per HDCP version tested, holding a String
+  status such as "usable" or "output-restricted". In web user agents these
+  are the key status values defined by EME {{EME}}.
+* canaryPlayback (Object, Optional): framesRendered and droppedFrames (Number)
+  and keyStatus (String).
+* sessionTypes (Object, Optional): a Boolean per session type tested.
+
+The minimum HDCP version required for each entry is signaled in the catalog
+with the outputProtection field ({{outputprotection}}).
+
+#### Robustness values (informative) {#cppreflight-robustness}
+
+The following table lists commonly used robustness values for Widevine
+{{WIDEVINE}}, PlayReady {{PLAYREADY}} and FairPlay Streaming {{FAIRPLAY}}.
+The authoritative definitions are those of each DRM system.
+
+| DRM system | Robustness value(s)                     | Common description |
+|:===========|:========================================|:===================|
+| Widevine   | HW_SECURE_ALL, HW_SECURE_DECODE         | L1                 |
+| Widevine   | HW_SECURE_CRYPTO                        | L2                 |
+| Widevine   | SW_SECURE_DECODE, SW_SECURE_CRYPTO      | L3                 |
+| PlayReady  | 3000                                    | SL3000             |
+| PlayReady  | 2000                                    | SL2000             |
+| FairPlay   | none exposed; level reported in request | Main, Baseline     |
+
+### Decode probe {#decodeprobe}
+
+Identifier: "org.ietf.moq.cmsf.decode"
+
+The request value is an Array of Objects, each with the fields label (String,
+Required), codec (String, Required, as defined in [MSF] Section "Codec"),
+width, height, framerate and bitrate (Number, Optional), and hdr (Object,
+Optional) holding transferFunction, colorGamut and metadataType Strings.
+
+The result is an Object with one key per label. Each value is an Object with
+the fields supported (Boolean, Required), and smooth and powerEfficient
+(Boolean, Optional). In web user agents these values correspond to those
+returned by the Media Capabilities API {{MEDIA-CAPABILITIES}}.
+
+### Display probe {#displayprobe}
+
+Identifier: "org.ietf.moq.cmsf.display"
+
+The request value is an empty Object. The result is an Object with the fields
+width and height (Number, Optional, in device pixels), dynamicRange (String,
+Optional, one of "standard" or "high") and external (Boolean, Optional,
+indicating that output is directed to an external or extended display).
+
+### Clock probe {#clockprobe}
+
+Identifier: "org.ietf.moq.cmsf.clock"
+
+The request value is an empty Object. The result is an Object with the single
+field clientTime (Number, Required), the subscriber wallclock time in
+milliseconds since the Unix epoch at which the response was generated. The
+publisher can use this to detect clock skew that would affect token expiry.
+
+## Preflight example {#preflightexample}
+
+This example shows a root catalog that offers a preflight. The catalog contains
+no media tracks of its own. It references a tier catalog that requires
+preflight, and a fallback catalog that does not. The session identifier `sid`
+is resolved from the URI fragment ([MSF] Section "Variable Substitution").
+
+~~~json
+{
+  "version": "draft-01",
+  "generatedAt": 1746104606044,
+  "preflight": {
+    "requestTrack": "preflight-%sid%",
+    "submitUri": "https://api.example.com/v1/preflight/%sid%",
+    "timeout": 4000,
+    "fallbackCatalog": "catalog-sd"
+  },
+  "tracks": [
+    {
+      "name": "preflight-%sid%",
+      "namespace": "example.com/preflight/%sid%",
+      "packaging": "eventtimeline",
+      "eventType": "org.ietf.moq.cmsf.preflight.request",
+      "mimeType": "application/json",
+      "isLive": true
+    },
+    {
+      "name": "catalog-premium",
+      "packaging": "catalog",
+      "preflightRequired": true
+    },
+    {
+      "name": "catalog-sd",
+      "packaging": "catalog"
+    }
+  ]
+}
+~~~
+
+Preflight request record. The content protection probe asks for a Widevine
+canary key whose PSSH carries the nonce in its content_id field:
+
+~~~json
+[
+  {
+    "L": [0, 0],
+    "data": {
+      "nonce": "n-7Qe2xK",
+      "expires": 1746104636044,
+      "probes": {
+        "org.ietf.moq.cmsf.decode": [
+          { "label": "uhd", "codec": "hvc1.2.4.L153.90",
+            "width": 3840, "height": 2160, "framerate": 30,
+            "bitrate": 16000000 }
+        ],
+        "org.ietf.moq.cmsf.display": {},
+        "org.ietf.moq.cmsf.clock": {},
+        "org.ietf.moq.cmsf.contentprotection": {
+          "contentProtections": [
+            {
+              "refID": "wv-canary",
+              "defaultKID": ["5f1e7c2a-93b4-4d61-8e0f-2a7c9b3d4e11"],
+              "scheme": "cbcs",
+              "drmSystem": {
+                "systemID": "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+                "robustnessLadder": [
+                  "HW_SECURE_ALL", "SW_SECURE_CRYPTO"
+                ],
+                "pssh": "AAAAVnBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7Q..."
+              }
+            }
+          ],
+          "hdcp": ["2.2"],
+          "encryptionSchemes": ["cbcs"]
+        }
+      }
+    }
+  }
+]
+~~~
+
+Preflight response, sent by HTTP POST to the submitUri:
+
+~~~json
+{
+  "nonce": "n-7Qe2xK",
+  "results": {
+    "org.ietf.moq.cmsf.decode": {
+      "uhd": { "supported": true, "smooth": true, "powerEfficient": true }
+    },
+    "org.ietf.moq.cmsf.display": {
+      "width": 3840, "height": 2160, "dynamicRange": "standard",
+      "external": false
+    },
+    "org.ietf.moq.cmsf.clock": { "clientTime": 1746104607180 },
+    "org.ietf.moq.cmsf.contentprotection": {
+      "wv-canary": {
+        "supported": true,
+        "granted": ["HW_SECURE_ALL", "SW_SECURE_CRYPTO"],
+        "challenges": {
+          "HW_SECURE_ALL": "CAESvAsKiAsIARLtCQquAggCEhBhM...",
+          "SW_SECURE_CRYPTO": "CAES9QoKwQoIARL0CAqwAggCEhCW..."
+        },
+        "encryptionSchemes": { "cbcs": true },
+        "hdcp": { "2.2": "usable" }
+      }
+    }
+  }
+}
+~~~
+
+The publisher verifies the signature of the HW_SECURE_ALL challenge, confirms
+that the content_id it carries contains the request nonce, and determines the
+security level from the challenge itself. It then authorizes the 2160p tracks,
+and denies the HDR rendition because the display probe reported a standard
+dynamic range.
+
+Preflight decision, returned in the HTTP response:
+
+~~~json
+{
+  "nonce": "n-7Qe2xK",
+  "expires": 1746104906044,
+  "catalog": { "name": "catalog-premium" },
+  "authorizedTracks": [
+    { "name": "catalog-premium" },
+    { "name": "video-2160" },
+    { "name": "video-1080" },
+    { "name": "audio" }
+  ],
+  "deniedTracks": [
+    { "name": "video-2160-hdr", "reason": "hdr-not-supported" }
+  ],
+  "authorization": { "cat": "eyJhbGciOiJFZERTQSJ9..." }
+}
+~~~
 
 # Catalog Examples
 
@@ -682,10 +1271,105 @@ the ECCP model, suitable for testing and development.
 
 TODO Security
 
+## Capability preflight {#security-preflight}
+
+Preflight results are generated by the subscriber and can be falsified. A
+publisher MUST NOT base an authorization decision solely on results that it
+cannot verify. Probe types that gate access to tracks SHOULD return evidence
+the publisher can verify independently, such as a challenge signed by a
+trusted component of the subscriber platform that embeds the request nonce.
+
+A publisher MUST reject a preflight response whose nonce is unknown or whose
+request has expired, and MUST NOT accept more than one response per nonce.
+
+Preflight decisions can carry authorization tokens. A decision MUST NOT be
+published on a track that is accessible to other subscribers. Decisions
+returned over HTTP SHOULD be marked as not cacheable. Tokens issued through
+preflight SHOULD be short-lived, scoped to the tracks listed in
+authorizedTracks, and bound to the subscriber session where the authorization
+scheme supports it.
+
+Preflight does not prevent a subscriber that is authorized for a track from
+redistributing its content.
+
+## Content protection preflight {#security-cppreflight}
+
+The robustness values granted to a subscriber are reported by the subscriber
+and can be falsified. Publishers SHOULD determine the security level from the
+license requests returned in the challenges field, and license servers SHOULD
+independently enforce the same requirement when issuing content keys.
+
+Content that is delivered to subscribers at different security levels SHOULD
+be encrypted with different keys, so that a key obtained at a lower level does
+not decrypt content intended for a higher one. Audio SHOULD be encrypted with a
+key separate from video, since some DRM systems do not apply hardware
+robustness to audio.
+
+## Preflight privacy {#security-preflight-privacy}
+
+Preflight results describe the subscriber device and so increase the
+fingerprinting surface available to the publisher. A publisher SHOULD request
+only the probe types it needs for an authorization decision, and SHOULD NOT
+retain results longer than needed for that decision and any associated audit.
+Probe type specifications SHOULD avoid results that carry stable device
+identifiers. Where verifiable evidence necessarily identifies a device, as
+some content protection challenges do, probe type specifications SHOULD
+require any privacy protections that the evidence source offers.
+
+For the content protection probe ({{cppreflight}}), a license request can
+carry a device or client identifier. For example, a Widevine {{WIDEVINE}}
+license request includes the client identification of the device unless it is
+encrypted to the license service using a service certificate. Publishers
+SHOULD use such privacy features when they are available, SHOULD limit access
+to challenges to the service that verifies them, and SHOULD NOT use
+identifiers obtained from challenges for purposes other than the
+authorization decision.
+
 
 # IANA Considerations
 
-This document has no IANA actions.
+## Preflight event timeline types {#iana-preflight-event-types}
+
+This document registers the following entries in the "MSF Event Timeline
+Types" registry established by [MSF]:
+
+| Event Type                           | Description        | Change Controller | Specification             |
+|:=====================================|:===================|:==================|:==========================|
+| org.ietf.moq.cmsf.preflight.request  | Preflight request  | IETF              | RFC XXXX                  |
+| org.ietf.moq.cmsf.preflight.response | Preflight response | IETF              | RFC XXXX                  |
+
+## CMSF Preflight Probe Types registry {#iana-preflight-probe-types}
+
+This document establishes the "CMSF Preflight Probe Types" registry, in the
+same registry group as the "MSF Event Timeline Types" registry established by
+[MSF]. The registration policy is Specification Required {{!RFC8126}}. Each
+entry contains an Identifier, a Description, and a Reference. The initial
+contents are:
+
+| Identifier                          | Description                    | Reference |
+|:====================================|:===============================|:==========|
+| org.ietf.moq.cmsf.contentprotection | Content protection capability  | RFC XXXX  |
+| org.ietf.moq.cmsf.decode            | Codec decoding capability      | RFC XXXX  |
+| org.ietf.moq.cmsf.display           | Display characteristics        | RFC XXXX  |
+| org.ietf.moq.cmsf.clock             | Subscriber wallclock time      | RFC XXXX  |
+
+### Guidance for Designated Experts {#iana-preflight-probe-experts}
+
+Designated experts should evaluate registration requests against the
+following criteria, per {{!RFC8126}}, Section 4.6:
+
+* The specification defines the request value, the result value, and the
+  form of the result when the probe is not executed, as required by
+  {{preflightprobetypes}}.
+* The specification states whether, and how, the publisher can verify the
+  result independently of the subscriber. A probe type whose result cannot be
+  verified should say so explicitly.
+* The specification considers the fingerprinting impact of its result, as
+  described in {{security-preflight-privacy}}, and avoids stable device
+  identifiers where it can.
+* The identifier does not duplicate the purpose of an existing entry.
+* Identifiers registered by specifications outside the IETF stream should use
+  Reverse Domain Name Notation under a domain controlled by the registrant.
 
 
 --- back
