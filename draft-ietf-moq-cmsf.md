@@ -31,9 +31,10 @@ author:
     email: wilaw@akamai.com
 
 normative:
-  MoQTransport: I-D.draft-ietf-moq-transport-18
-  MSF:  I-D.draft-ietf-moq-msf-01
-  LOC: I-D.draft-ietf-moq-loc-02
+  MoQTransport: I-D.draft-ietf-moq-transport-23
+  MSF:  I-D.draft-ietf-moq-msf-02
+  LOC: I-D.draft-ietf-moq-loc-05
+  LOCMAF: I-D.draft-einarsson-moq-locmaf-02
   CMAF:
     author:
       - name: International Organization for Standardization
@@ -95,7 +96,12 @@ This document describes version 1 of the CMSF streaming format.
 All of the specifications, requirements, and terminology defined in [MSF] apply to
 implementations of this extension unless explicitly noted otherwise in this document.
 
-# CMAF Packaging
+# Packaging of CMAF-compliant content {#cmafpackaging}
+
+This section specifies how CMAF-compliant content is carried over MOQT and signaled
+in the catalog. The initialization, switching, and Object and Group packaging rules
+defined below apply to both packaging types registered in {{catalogdescription}},
+which differ only in how each Object payload is encoded.
 
 ## Initialization headers {#initheaders}
 A CMAF header is a sequence of CMAF constrained ISO BMFF boxes that do not reference any
@@ -109,7 +115,7 @@ value of an "initRef" property in all tracks which use that header for initializ
 
 ## Switching sets and tracks
 This specification defines a direct mapping between CMAF Tracks ( [CMAF] Section 3.2.1) and
-MOQT tracks ([MoQTransport] Section 2.3).
+MOQT tracks ([MoQTransport] Section 2.4).
 
 CMAF switching sets are a set of one or more CMAF tracks (3.2.1), where each track is an
 alternative encoding of the same source content and are constrained to enable seamless
@@ -144,26 +150,76 @@ Each MOQT Group
 * The Group boundary MUST align with a CMAF Fragment boundary. CMAF Fragments and CMAF
   Chunks MUST NOT span Groups.
 
-## Catalog description
+## Catalog description {#catalogdescription}
 
-### CMAF packaging type
-This specification extends the allowed packaging values defined in [MSF]
-to include one new entry, as defined in Table 1 below:
+This specification defines two packaging types for CMAF-compliant content, both
+registered as "packaging" values extending those defined in [MSF]: "cmaf"
+({{cmafpackagingtype}}) for native CMAF chunks, and "locmaf" ({{locmafpackaging}})
+for a compact encoding of the same content.
+
+### CMAF packaging type {#cmafpackagingtype}
+The "cmaf" packaging value is registered in {{tab-cmaf-packaging}}:
 
 | Name              |   Value         |      Reference        |
 |:==================|:================|:======================|
 | CMAF              | cmaf            | This RFC              |
+{: #tab-cmaf-packaging title="CMAF packaging value"}
 
 Every Track entry in a CMSF catalog carrying CMAF-packaged media data MUST declare a
 "packaging" type value of "cmaf".
 
+### LOCMAF packaging {#locmafpackaging}
+LOCMAF [LOCMAF] is a compact packaging of CMAF-compliant media for MOQT. A LOCMAF
+Object carries the same media samples as the equivalent CMAF Chunk, but encodes the
+Movie Fragment Box (moof) header as a set of tagged, delta-coded fields. This lets a
+receiver either reconstruct the original CMAF Chunk for playback via Media Source
+Extensions, or extract the elementary samples directly for playback via WebCodecs.
+The Object encoding, the canonical CMAF reconstruction, and the initialization
+requirements are specified in [LOCMAF]; this document only registers the packaging
+value.
+
+Apart from the encoding of the Object payload, a LOCMAF track reuses the packaging
+defined in this section unchanged. In particular:
+
+* the switching-set, Group, and Object packaging requirements defined above apply
+  to each LOCMAF Object as the CMAF Chunk it reconstructs to;
+* the CMAF header is carried in the catalog exactly as for CMAF tracks, as an
+  initDataList entry referenced from the track by "initRef" (see {{initheaders}});
+  a "cmaf" track and a "locmaf" track wrapping the same source MAY reference the
+  same initDataList entry; and
+* content protection is signaled exactly as for CMAF tracks, via the root-level
+  "contentProtections" array referenced by "contentProtectionRefIDs"
+  (see {{contentprotection}}).
+
+The "locmaf" packaging value is registered in {{tab-locmaf-packaging}}:
+
+| Name              |   Value         |      Reference        |
+|:==================|:================|:======================|
+| LOCMAF            | locmaf          | [LOCMAF]              |
+{: #tab-locmaf-packaging title="LOCMAF packaging value"}
+
+Every Track entry in a CMSF catalog carrying LOCMAF-packaged media data MUST declare
+a "packaging" type value of "locmaf".
+
+The LOCMAF Object encoding is versioned independently of the CMSF catalog "version".
+A "locmaf" track MUST carry the "packagingMetadata" field defined in [MSF], with a
+"version" key holding the track's LOCMAF packaging version. For example, a track
+using LOCMAF version 0.3 carries a "packagingMetadata" value of "version=0.3". The
+"version" key, any further keys for the "locmaf" packaging value, and how a
+subscriber handles a version it does not support are defined in [LOCMAF].
+
+See {{cmaf-locmaf-example}} for a catalog example that offers the same source
+under both "cmaf" and "locmaf" packaging, sharing initialization data.
+
 ### Max SAP starting types
-This specification adds two track-level catalog fields, as defined in Table 2 below:
+This specification adds two track-level catalog fields, as defined in
+{{tab-sap-fields}}:
 
 | Field                       |  Name                  |           Definition      |
 |:============================|:=======================|:==========================|
 | Max Group SAP starting type | maxGrpSapStartingType  | {{maxgrpsapstartingtype}} |
 | Max Object SAP starting type| maxObjSapStartingType  | {{maxobjsapstartingtype}} |
+{: #tab-sap-fields title="CMAF SAP starting-type fields"}
 
 #### Max Group SAP starting type {#maxgrpsapstartingtype}
 Location: T    Required: Optional   JSON Type: Number
@@ -247,7 +303,7 @@ by reusing the signaling model established by DASH [DASH] and the DASH-IF
 Encryption and Content Protection (ECCP) guidelines [DASHIF-ECCP].
 
 Content protection in CMSF differs from the encryption scheme defined in
-[MSF] Section 4.3. While MSF defines an end-to-end encryption mechanism
+[MSF] Section 4.4. While MSF defines an end-to-end encryption mechanism
 using MoQ Secure Objects for LOC-packaged content, CMSF uses ISO Common
 Encryption [CENC] applied at the CMAF media layer. In CMSF, the media
 samples within CMAF chunks are encrypted as specified by [CENC], and the
@@ -428,7 +484,7 @@ definition video qualities, along with an audio track.
 
 ~~~json
 {
-  "version": "draft-01",
+  "version": "draft-02",
   "generatedAt": 1746104606044,
   "tracks":[
     {
@@ -525,7 +581,7 @@ FairPlay.
 
 ~~~json
 {
-  "version": "draft-01",
+  "version": "draft-02",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
@@ -626,7 +682,7 @@ the ECCP model, suitable for testing and development.
 
 ~~~json
 {
-  "version": "draft-01",
+  "version": "draft-02",
   "generatedAt": 1746104606044,
   "contentProtections": [
     {
@@ -667,6 +723,68 @@ the ECCP model, suitable for testing and development.
       "id": "init-video",
       "type": "inline",
       "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQAA..."
+    }
+  ]
+}
+~~~
+
+## CMAF and LOCMAF variants sharing initialization data {#cmaf-locmaf-example}
+
+This example shows a catalog that offers the same English AAC 96kbps audio
+media with both "cmaf" and "locmaf" low-latency packaging for 1s groups.
+They both refer to the same initDataList entry ("init-audio") and declare
+the same language.
+
+When packaging each audio frame as a CMAF chunk, there is a packaging
+overhead of ~40kbps for "cmaf" packaging, but only ~1kbps for "locmaf".
+The "audio-locmaf" track therefore announces a bitrate of 97kbps compared
+to 136kbps for "audio-cmaf". The "locmaf" track additionally carries its
+LOCMAF packaging version in the "packagingMetadata" field.
+
+A subscriber selects whichever packaging it supports.
+
+~~~json
+{
+  "version": "draft-02",
+  "generatedAt": 1746104606044,
+  "tracks": [
+    {
+      "name": "audio-cmaf",
+      "renderGroup": 1,
+      "packaging": "cmaf",
+      "isLive": true,
+      "targetLatency": 200,
+      "initRef": "init-audio",
+      "role": "audio",
+      "codec": "mp4a.40.2",
+      "samplerate": 48000,
+      "channelConfig": "2",
+      "lang": "en",
+      "bitrate": 136000,
+      "altGroup": 1
+    },
+    {
+      "name": "audio-locmaf",
+      "renderGroup": 1,
+      "packaging": "locmaf",
+      "packagingMetadata": "version=0.3",
+      "isLive": true,
+      "targetLatency": 200,
+      "initRef": "init-audio",
+      "role": "audio",
+      "codec": "mp4a.40.2",
+      "samplerate": 48000,
+      "channelConfig": "2",
+      "lang": "en",
+      "bitrate": 97000,
+      "altGroup": 1
+    }
+  ],
+  "initDataList": [
+    {
+      "id": "init-audio",
+      "type": "inline",
+      "data": "AAAAHGZ0eXBjbWYyAAAAAGNtZjJpc282bXA0MQ..."
     }
   ]
 }
